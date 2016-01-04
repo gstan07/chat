@@ -1,57 +1,152 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>Chat by gstan07</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Chat</h1>
-      <h2 class="project-tagline"></h2>
-      <a href="https://github.com/gstan07/chat" class="btn">View on GitHub</a>
-      <a href="https://github.com/gstan07/chat/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/gstan07/chat/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="style/chat.css"/>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pubnub/3.7.7/pubnub.min.js"></script>
+		<script src="//www.parsecdn.com/js/parse-1.6.12.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/livestamp/1.1.2/livestamp.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
+		<script>
+		//get rid of the 300ms delay with fastclick.js
+		if ('addEventListener' in document) {
+		    document.addEventListener('DOMContentLoaded', function() {
+		        FastClick.attach(document.body);
+		    }, false);
+		}
+		</script>
+		<script src="scripts/chat.js"></script>
+	</head>
+	<body id="chatapp">
+		<div class="spinner">...wait</div>
+		<div id="chat_container"></div>
+	</body>
 
-    <section class="main-content">
-      <h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+	<script type="text/html" id="loginscreen">
+		<form id="loginform">
+			<label for="username">Username: <input required type="text" id="username" name="username"/></label>
+			<label for="password">Password: <input required type="password" id="password" name="password"/></label>
+			<input type="submit" value="Sign in"/>
+			<a href="#" id="register">Register</a> <a href="#" id="forgotpasswordlink">Forgot password</a> <a href="#" id="signinasguest" data-guestname="">Sign in as <strong>guestname</strong></a>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here <a href="https://guides.github.com/features/mastering-markdown/">using GitHub Flavored Markdown</a>, select a template crafted by a designer, and publish. After your page is generated, you can check out the new <code>gh-pages</code> branch locally. If you’re using GitHub Desktop, simply sync your repository and you’ll see the new branch.</p>
+		</form>
+	</script>
+	
+	<script type="text/html" id="registerscreen">
+		<form id="registerform">
+			<label for="register_username">Username: <input required type="text" id="register_username" name="username"/></label>
+			<label for="register_email">Email: <input required type="email" id="register_email" name="email"/>
+			<label for="register_password">Password: <input required type="password" id="register_password" name="password"/></label>
+			<input type="submit" value="Register"/>
+			<a href="#" id="backtologin">Back to login?</a>
+		</form>
+	</script>
+	
+	<script type="text/html" id="chatwindow">
+		<div class="chatwindow">
+			<div class="header">
+				<a class="tab selected" data-tab="mainchat" href="#">main</a>
+				<a class="tab" data-tab="userslist" href="#">Users:<span class="occupancy" id="main_occupancy"> <%=occupancy%></span></a>
+				<a class="tab" data-tab="conversations" href="#">Conversations<span class="counter" data-count="0">0</span></a>
+				<a class="tab" data-tab="settings" href="#"><%=username%></a>
+			</div>
+			<div class="content">
+				<div class="appview" style="display:block" data-tab="mainchat">
+					<div class="wrapper">
+						<div class="scroller" id="mainchatscroller" data-channel="<%=mainchannelname%>" data-room="<%=mainchannelname%>"></div>
+						<div class="footer">
+							<a class="sayitbutton button" href="#">Say it</a>
+							<input data-channel="<%=mainchannelname%>" type="text" id="postonmainchat" placeholder="say something"/>
+						</div>
+					</div>
+				</div>
+				<div class="appview" data-tab="userslist">
+					<div class="scroller">
+						<% _.each(users, function(user) { %> 
+						    <div class="user" data-user="<%= user %>"><%= user %></div>
+						<% }); %>
+					</div>
+				</div>
+				<div class="appview" data-tab="conversations">
+					<div class="wrapper">
+						<div class="scroller conversations_container">
+						<div class="empty">you have no private conversations</div>
 
-<h3>
-<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
 
-<p>We’ve crafted some handsome templates for you to use. Go ahead and click 'Continue to layouts' to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved.</p>
 
-<h3>
-<a id="creating-pages-manually" class="anchor" href="#creating-pages-manually" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating pages manually</h3>
+							
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
 
-<h3>
-<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+							
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor’s GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
 
-<h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
 
-<p>Having trouble with Pages? Check out our <a href="https://help.github.com/pages">documentation</a> or <a href="https://github.com/contact">contact support</a> and we’ll help you sort it out.</p>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/gstan07/chat">Chat</a> is maintained by <a href="https://github.com/gstan07">gstan07</a>.</span>
 
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
 
-    </section>
 
-  
-  </body>
+						</div>
+						
+					</div>
+				</div>
+				<div class="appview" data-tab="settings">
+					<div class="scroller">settings</div>
+				</div>
+
+			</div>
+			
+		</div>
+	</script>
+	<script type="text/html" id="user_item_template">
+		
+		<div class="user" data-user="<%=user%>"><%=user%></div>	
+		
+	</script>
+	<script type="text/html" id="chatline">
+		<div data-chat-id="<%=user%><%=time%>" class="chatline" data-author="<%=user%>">
+			<span class="user"><%=user%></span>
+			<span class="message"><%=message%></span>
+			<span class="time" data-livestamp="<%=time%>">&nbsp;</span>
+		</div>
+	</script>
+	<script type="text/html" id="conversation_user">
+		<div class="conversation" data-room="<%=room%>" data-partner="<%=partner%>" data-channel="<%=channel%>">
+								<div class="avatar">
+									<img src="https://cdn0.iconfinder.com/data/icons/user-pictures/100/matureman1-128.png"/>
+								</div>
+								<div class="user"><%=user%></div>
+								<div class="lastmsg">
+									<div class="from"><%=lastmessagefrom%>:</div>
+									<div class="message"><%=lastmessage%></div>
+									<div class="time" data-livestamp="<%=lastmessagetime%>">&nbsp;</div>
+								</div>
+							</div>
+	</script>
+	<script type="text/html" id="private_conversation">
+		<div id="privatewindow" class="private_window animated" data-partner="<%=partner%>" data-room="<%=room%>">
+			<div class="top_bar">
+			<a href="#" id="closeprivatewindow" class="back">back <span class="counter" data-count="0">0</span></a>
+				<div class="avatar">
+					<img src="https://cdn4.iconfinder.com/data/icons/unigrid-human/52/011_user_profile_avatar_woman_girl_round-64.png"/>
+				</div>
+				
+			<span class="title">
+				<%=partner%> 
+			</span>
+			</div>
+
+			<div class="chatlines">
+				<div class="wrapper">
+					start
+				</div>
+				
+			</div>
+			<div class="footer">
+				<a class="sayitbutton button" href="#">Say it</a>
+				<input data-channel="<%=channel%>" placeholder="say something">
+			</div>
+		</div>
+	</script>
 </html>
