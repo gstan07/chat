@@ -52,7 +52,7 @@
 	<script type="text/html" id="registerscreen">
 		<form id="registerform">
 		<div class="row">
-			<label for="register_username">Username: <small>This is how others will know you </small><input required type="text" id="register_username" name="username"/></label>
+			<label for="register_username">Desired username: <small>This is how others will know you </small><input required type="text" id="register_username" name="username"/></label>
 			</div>
 			<div class="row">
 			<label for="register_email">Email:<small>It has to be a valid email address</small> <input required type="email" id="register_email" name="email"/>
@@ -99,7 +99,7 @@
 				<div class="appview" data-tab="userslist">
 					<div class="scroller">
 						<% _.each(users, function(user) { %> 
-							<%if(user.state){
+							<%if(user.state.username){
 
 								%>
 
@@ -170,7 +170,7 @@
 							</div>
 	</script>
 	<script type="text/html" id="private_conversation">
-		<div id="privatewindow" class="private_window animated" data-partner="<%=partner%>" data-room="<%=room%>">
+		<div id="privatewindow" class="private_window animated bounceInLeft" data-partner="<%=partner%>" data-room="<%=room%>">
 			<div class="top_bar">
 			<a href="#" id="closeprivatewindow" class="back">
 			<img src="images/back.svg"/>

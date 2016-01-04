@@ -392,7 +392,7 @@ var chatApp = {
 				
 				var conversation_item = jQuery(".conversation[data-room='"+message.room+"']");
 				if(conversation_item.length == 0){
-					
+					var avatar = jQuery(".user[data-user='"+partner+"'] .avatar").attr("src");
 					chatApp.renderTemplate({
 						template:"#conversation_user",
 						data:{
@@ -403,7 +403,7 @@ var chatApp = {
 							lastmessage:message.text,
 							lastmessagetime:message.time,
 							channel:message.channel,
-							avatar:message.avatar
+							avatar:avatar
 						},
 						onRender:function(content){
 							jQuery(".conversations_container .empty").remove();
