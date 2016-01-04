@@ -1,0 +1,477 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"priva",
+				"private_discussion_window"
+			],
+			[
+				"is",
+				"isCharacterKeyPress"
+			],
+			[
+				"ke",
+				"keyCode"
+			],
+			[
+				"da",
+				"data"
+			],
+			[
+				"pri",
+				"private_room"
+			],
+			[
+				"ty",
+				"typeChecker"
+			],
+			[
+				"gee",
+				"getPrivateChannelName"
+			],
+			[
+				"lea",
+				"leaveLine"
+			],
+			[
+				"le",
+				"leaveLine"
+			],
+			[
+				"te",
+				"text-decoration"
+			],
+			[
+				"user",
+				"userline"
+			],
+			[
+				"ge",
+				"getPrivateChannelName"
+			],
+			[
+				"upda",
+				"updatePrivateChatWindow"
+			],
+			[
+				"de",
+				"default_history_limit"
+			],
+			[
+				"private",
+				"private_channel_name"
+			],
+			[
+				"par",
+				"partner_uuid"
+			],
+			[
+				"us",
+				"userstate"
+			],
+			[
+				"send",
+				"sendInvitation"
+			],
+			[
+				"private_ca",
+				"private_chat_channel"
+			],
+			[
+				"invi",
+				"invitation"
+			],
+			[
+				"gene",
+				"getPrivateChannelName"
+			],
+			[
+				"subsc",
+				"subscribeToPrivateChatChannel"
+			],
+			[
+				"data",
+				"data-livestamp"
+			],
+			[
+				"remove",
+				"removeClass"
+			],
+			[
+				"ope",
+				"openPrivateChatWindow"
+			],
+			[
+				"ne",
+				"newPrivateChatLine"
+			],
+			[
+				"pr",
+				"private_channel"
+			],
+			[
+				"in",
+				"invitation"
+			],
+			[
+				"data-",
+				"data-private-channel"
+			],
+			[
+				"private_",
+				"private_room_container"
+			],
+			[
+				"dis",
+				"discussion_container"
+			],
+			[
+				"invita",
+				"invitation_message"
+			],
+			[
+				"open",
+				"openPrivateChat"
+			],
+			[
+				"u",
+				"username2"
+			],
+			[
+				"backgr",
+				"background-color"
+			],
+			[
+				"tex",
+				"text"
+			],
+			[
+				"chat",
+				"chatline"
+			],
+			[
+				"admin",
+				"adminBroadcast"
+			],
+			[
+				"get",
+				"getTime"
+			],
+			[
+				"shw",
+				"show_history_on_load"
+			],
+			[
+				"font-s",
+				"font-style"
+			],
+			[
+				"new",
+				"newUserLine"
+			],
+			[
+				"users",
+				"userstate"
+			],
+			[
+				"cha",
+				"channel"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"padding",
+				"padding-left"
+			],
+			[
+				"d",
+				"display"
+			],
+			[
+				"inline",
+				"inline-block"
+			],
+			[
+				"app",
+				"appendTo"
+			],
+			[
+				"fcs",
+				"fcschat"
+			],
+			[
+				"con",
+				"container"
+			],
+			[
+				"co",
+				"config"
+			],
+			[
+				"pu",
+				"pubnub_subscribe_key"
+			],
+			[
+				"pub",
+				"pubnub_publish_key"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 87.0,
+		"selected_items":
+		[
+			[
+				"remove ",
+				"Package Control: Remove Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"packa",
+				"Package Control: Remove Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/wp-content/plugins/fcs.public.galleries/fcs_public_gallery.php",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/wp-content/plugins/fcs.ipb.integration/fcs.ipb.integration.php",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/wp-content/plugins/fcs.chat/css/fcs.chat.css",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/wp-content/plugins/fcs.live/live.php",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/wp-content/plugins/fcs.chat/chat.php",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/wp-content/plugins/fcs.chat/css/fcs.chat.less",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/wp-content/plugins/fcs.chat/js/fcs.chat.js",
+		"/Users/gestan/Library/Application Support/Sublime Text 2/Packages/Less2Css/less2css.sublime-settings",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/wp-content/plugins/fcs.views/view.php",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/sftp-config.json",
+		"/Users/gestan/Dropbox (Personal)/pwrk/fcswp/fcsforum.sublime-workspace"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"monit",
+			".state",
+			"evt",
+			".state",
+			"getpr",
+			"message:",
+			".state",
+			"monitor",
+			".scrollhe",
+			".state",
+			"isty",
+			"presence",
+			"isty",
+			"state",
+			"keyup",
+			"timeou",
+			"typingto",
+			"monitor",
+			"state",
+			"presence",
+			"state",
+			"keyup",
+			"state",
+			"textarea",
+			"200px",
+			"adminbr",
+			"histor",
+			"hidespi",
+			"hidesp",
+			"openprivatec",
+			"hidden",
+			"showmainchatus",
+			"users",
+			"bindstu",
+			"history",
+			"his private",
+			"history",
+			"his pri",
+			"openpri",
+			"bindstu",
+			"his priva",
+			"appendto",
+			"keyup",
+			"openpri",
+			"bindstu",
+			"openpriva",
+			"openpri",
+			"console.log",
+			"sendinvi",
+			"subscribetopr",
+			"console.log",
+			"say:",
+			"sendinvi",
+			"getprivatec",
+			"sendinvi",
+			"user1",
+			"sendinvi",
+			"fcschat",
+			"invitat",
+			"scrollhe",
+			"header",
+			"console.log",
+			"requestprivate",
+			"requestpri",
+			"binds",
+			"requestpri",
+			"partner",
+			"header",
+			"subscribe(",
+			".say",
+			"subs",
+			"bindst",
+			"hidden",
+			"subscribe(",
+			"chatli",
+			".remove",
+			"history",
+			"subscribe",
+			"bind",
+			"say:",
+			"binds",
+			"openpri",
+			"subscribetopri",
+			"openpriv",
+			"say",
+			"<span",
+			"broadca",
+			"time/",
+			"gettime",
+			"broadc",
+			"userna",
+			"updatema",
+			"globals",
+			"histor"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.sftp":
+	{
+		"height": 100.0
+	},
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 305.0,
+	"status_bar_visible": true
+}
