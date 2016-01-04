@@ -55,7 +55,7 @@
 			<div class="content">
 				<div class="appview" style="display:block" data-tab="mainchat">
 					<div class="wrapper">
-						<div class="scroller" data-channel="<%=mainchannelname%>" data-room="<%=mainchannelname%>"></div>
+						<div class="scroller" id="mainchatscroller" data-channel="<%=mainchannelname%>" data-room="<%=mainchannelname%>"></div>
 						<div class="footer">
 							<a class="sayitbutton button" href="#">Say it</a>
 							<input data-channel="<%=mainchannelname%>" type="text" id="postonmainchat" placeholder="say something"/>
@@ -73,7 +73,22 @@
 					<div class="wrapper">
 						<div class="scroller conversations_container">
 						<div class="empty">you have no private conversations</div>
+
+
+
+							
+
+
+							
+
+
+
+
+
+
+
 						</div>
+						
 					</div>
 				</div>
 				<div class="appview" data-tab="settings">
@@ -97,12 +112,22 @@
 		</div>
 	</script>
 	<script type="text/html" id="conversation_user">
-		conversation_user
+		<div class="conversation" data-room="<%=room%>" data-partner="<%=partner%>" data-channel="<%=channel%>">
+								<div class="avatar">
+									<img src="https://cdn0.iconfinder.com/data/icons/user-pictures/100/matureman1-128.png"/>
+								</div>
+								<div class="user"><%=user%></div>
+								<div class="lastmsg">
+									<div class="from"><%=lastmessagefrom%>:</div>
+									<div class="message"><%=lastmessage%></div>
+									<div class="time" data-livestamp="<%=lastmessagetime%>">&nbsp;</div>
+								</div>
+							</div>
 	</script>
 	<script type="text/html" id="private_conversation">
-		<div class="private_window" data-partner="<%=partner%>" data-room="<%=room%>">
+		<div id="privatewindow" class="private_window animated" data-partner="<%=partner%>" data-room="<%=room%>">
 			<div class="top_bar">
-			<a href="#" class="back">back</a>
+			<a href="#" id="closeprivatewindow" class="back">back <span class="counter" data-count="0">0</span></a>
 				<div class="avatar">
 					<img src="https://cdn4.iconfinder.com/data/icons/unigrid-human/52/011_user_profile_avatar_woman_girl_round-64.png"/>
 				</div>
@@ -110,19 +135,13 @@
 			<span class="title">
 				<%=partner%> 
 			</span>
-			<span class="lastmsg">
-					<span class="user"></span>
-					<span class="message"></span>
-					<span class="time"></span>
-				</span>
-			<!--<a href="#" class="profile">profile</a>-->
-				<!--<a href="#" class="toggler on">open</a>-->
-				&nbsp; 
-				
-				</div>
+			</div>
 
-			<div class="scroller">
-				private coversation with <%=partner%>
+			<div class="chatlines">
+				<div class="wrapper">
+					start
+				</div>
+				
 			</div>
 			<div class="footer">
 				<a class="sayitbutton button" href="#">Say it</a>

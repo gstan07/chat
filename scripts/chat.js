@@ -14,6 +14,8 @@ var chatApp = {
 		warn_on_reload:false
 	},
 	init:function(){
+		chatApp["private_messages"] = [];
+		chatApp["scrollerheight"] = jQuery(window).height()-100;
 		chatApp.uiBindings();
 		Parse.initialize(
 			chatApp.config.parse.application_id,
@@ -83,6 +85,9 @@ var chatApp = {
 								    		onRender:function(content){
 								    			//rendering chat
 								    			jQuery("#chat_container").html(content);
+								    			jQuery("#mainchatscroller").css({
+								    				"max-height":chatApp.scrollerheight
+								    			});
 								    			chatApp.updateChatWindow({
 								    				
 														from:"Chat admin",
@@ -102,8 +107,10 @@ var chatApp = {
     					})    					
     				},
     				onMessageReceived:function(m){
-    					console.log("message received on the private channel",m);
- 						chatApp.updateChatWindow(m)   					
+    					//own private channel
+    					chatApp.onPrivateMessageReceived(m);
+
+ 						//chatApp.onPrivateMessageReceived(m);   					
     				}
     			});
     		},
@@ -217,20 +224,7 @@ var chatApp = {
 		if(m.type == "text"){
 			if(m.channel == chatApp.config.main_channel_name){
 				var chat_window = jQuery(".scroller[data-channel='"+m.channel+"']");
-				chat_window.css({
-					"max-height":jQuery(window).height()-100
-				})
-			}else{
-				var chat_window = jQuery(".private_window[data-room='"+m.room+"'] .scroller");
-			
-				if(chat_window.length == 0){
-					if(m.from == chatApp.username || m.channel == chatApp.username){
-						chatApp.openPrivateWindow(m.from,m.channel);
-						var chat_window = jQuery(".private_window[data-room='"+m.room+"'] .scroller");	
-					}
-				}				
 			}
-			// chat_window.find(".chatline[data-chat-id='"+m.from+m.time"']")
 			if(chat_window.length == 1 && chat_window.find(".chatline[data-chatline-id='"+m.from+m.time+"']").length == 0){
 					chatApp.renderTemplate({
 					template:"#chatline",
@@ -245,36 +239,24 @@ var chatApp = {
 						chat_window.animate({
 							scrollTop:chat_window[0].scrollHeight
 						})
-						var last_msg_container = chat_window.closest(".private_window").find(".lastmsg");
-						if(m.from == chatApp.username){
-							m.from = "You";
-						}
-						last_msg_container.find(".message").html(m.text);
-						last_msg_container.find(".user").html(m.from);
-						last_msg_container.find(".time").attr("data-livestamp",m.time);
-						//nottification
-						if(m.channel != chatApp.config.main_channel_name){
-							chat_window.closest(".private_window.quiet").addClass("unread");
-							chatApp.updatePrivateNottificationBubble();
-						}
+						
 					}
 				});
 			}
 		}
 	},
 	updatePrivateNottificationBubble:function(){
-		var unread_msgs = jQuery(".private_window.unread").length;
+
+		var unread_msgs = jQuery(".conversation.unread").length;
 		var nottification_bubble = jQuery("[data-count]");
 		nottification_bubble.attr("data-count",unread_msgs);
 		nottification_bubble.html(unread_msgs);
 	},
 	openPrivateWindow:function(partner,channel){
-		
-		//var private_window_name = chatApp.getPrivateWindowName(partner,)
-		var room_name = chatApp.getPrivateWindowName(partner,chatApp.username);
-		var private_window = jQuery(".private_window[data-room='"+room_name+"']");
-		jQuery(".private_window").addClass("quiet");
-		if(private_window.length == 0){
+		if(jQuery(".private_window").length == 0){
+			
+			var room_name = chatApp.getPrivateWindowName(partner,chatApp.username);
+			
 			chatApp.renderTemplate({
 				template:"#private_conversation",
 				data:{
@@ -282,36 +264,36 @@ var chatApp = {
 					room:room_name,
 					channel:channel
 				},
-				onRender:function(content){
-					var private_window = jQuery(content);
-					var private_window_container = jQuery(".conversations_container");
-					private_window.find(".scroller").css({
-						"max-height":jQuery(window).height()-170
-					});
-					if(partner == channel){
-						private_window_container.css({
-						"overflow-y":"auto",
-						"position":"static"
-						})
-						jQuery("a[data-tab='conversations']").click();
-					}else{
-						// private_window_container.css({
-						// "overflow-y":"scroll",
-						// "position":"fixed"
-						// })
-						private_window.addClass("quiet");
-					}
+				onRender:function(private_window_layout){
+					jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
+					var wrapper_max_height = jQuery(window).height()-100;
 					
-					private_window.appendTo(private_window_container);
+					jQuery(private_window_layout).appendTo(".chatwindow");
+					chatApp.updatePrivateNottificationBubble();
+					//inserting history if exists
+					jQuery(chatApp.private_messages).each(function(index,message){
+						if(message.room == room_name){
+							chatApp.renderTemplate({
+								template:"#chatline",
+								data:{
+									user:message.from,
+									message:message.text,
+									time:message.time
+								},
+								onRender:function(content){
+									content = jQuery(content);
+									content.appendTo("#privatewindow[data-room='"+room_name+"'] .wrapper");
+								}
+							});
+						}
+					});
 
+					jQuery(".private_window").find(".wrapper").css({
+						"max-height":chatApp.scrollerheight
+					})
 				}
 			});
-		}else{
-			private_window.removeClass("quiet unread");
-			chatApp.updatePrivateNottificationBubble();
-			jQuery("a[data-tab='conversations']").click();
 		}
-		jQuery(".conversations_container .empty").hide();
 	},
 	getPrivateWindowName:function(username1,username2){
 		if(username1 && username2){
@@ -337,8 +319,80 @@ var chatApp = {
 		
 
 	},
-	togglePrivateWindow:function(private_window){
+	onPrivateMessageReceived:function(m){
+		//check if the current user should see the message
+		
+		if(m.from == chatApp.username || //from the current user
+			m.channel == chatApp.username || //to the current user
+			m.room == chatApp.getPrivateWindowName(m.from,chatApp.username)){//from partner in conversation with the current user
+			chatApp.private_messages.push(m);
+			//update private chat window if necesary
+			var private_window = jQuery(".private_window[data-room='"+m.room+"']");
+			if(private_window.length == 1){
+				chatApp.renderTemplate({
+					template:"#chatline",
+					data:{
+						user:m.from,
+						message:m.text,
+						time:m.time
+					},
+					onRender:function(content){
+						var private_window_scroller = private_window.find(".wrapper")
+						jQuery(content).appendTo(private_window_scroller)
+						private_window_scroller.animate({
+							scrollTop:private_window_scroller[0].scrollHeight
+						})
+					}
+				});
+			}
+			//update conversations list
+			jQuery(chatApp.private_messages).each(function(index,message){
+				if(message.from == chatApp.username){
+					var partner = message.channel;
+					var from = "you";
+				}else{
+					var partner = message.from;
+					var from = message.from;
+				}
 
+				var room_name = message.room;
+				
+				var conversation_item = jQuery(".conversation[data-room='"+room_name+"']");
+				if(conversation_item.length == 0){
+					// console.log("will render new conversation item because: ",room_name,conversation_item,message);
+					chatApp.renderTemplate({
+						template:"#conversation_user",
+						data:{
+							partner:partner,
+							user:partner,
+							lastmessagefrom:from,
+							room:room_name,
+							lastmessage:message.text,
+							lastmessagetime:message.time,
+							channel:message.channel
+						},
+						onRender:function(content){
+							jQuery(".conversations_container .empty").remove();
+							jQuery(content).appendTo(".conversations_container");
+							if(private_window.length == 0){
+								console.log(room_name,jQuery(".conversation[data-room='"+room_name+"']").length,"unread");
+								//jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
+								jQuery(".conversation[data-room='"+room_name+"']").remove();
+							}
+						}
+					});
+				}else{
+					conversation_item.find(".lastmsg .from").html(from);
+					conversation_item.find(".lastmsg .message").html(message.text);
+					conversation_item.find(".lastmsg .time").attr("data-livestamp",message.time);
+					if(private_window.length == 0){
+						jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
+					}
+				}
+				
+			});
+			chatApp.updatePrivateNottificationBubble();
+		}
 	},
 	uiBindings:function(){
 		
@@ -476,45 +530,26 @@ var chatApp = {
 							console.log(chatApp.username+" subscribed to private channel of "+ partner);
 						},
 						onMessageReceived:function(m){
-							chatApp.updateChatWindow(m);
+							//partner private channel
+							chatApp.onPrivateMessageReceived(m);
+							//chatApp.updateChatWindow(m);
 						}
 					});
 				}
 			}
 		});
+		//open private window from conversations list
+		jQuery(document).on("click",".conversation[data-room]",function(){
+			var partner = jQuery(this).attr("data-partner");
+			var channel = jQuery(this).attr("data-channel");
 
-		
+			chatApp.openPrivateWindow(partner,channel);
+			
+		});
 
 		//toggle private window
-		jQuery(document).on("click",".private_window.quiet .top_bar,.private_window .back",function(e){
-			e.stopPropagation();
-			var private_window = jQuery(this).closest(".private_window");
-			var private_window_container = jQuery(this).closest(".conversations_container");
-			console.log(private_window);
-			if(private_window.hasClass("quiet")){
-				jQuery(".private_window").addClass("quiet")
-				private_window.removeClass("quiet unread");
-				chatApp.updatePrivateNottificationBubble();
-				// private_window_container.css({
-				// 	"overflow-y":"auto",
-				// 		"position":"static"
-				// });
-			}else{
-				if(private_window.find(".chatline").length != 0){//if empty, remove it
-					//set as quiet
-					jQuery(".private_window").addClass("quiet");
-					private_window_container.css({
-						"overflow-y":"scroll",
-						"position":"fixed"
-					});	
-				}else{
-					private_window.remove();
-					if(jQuery(".private_window").length == 0){
-						private_window_container.find(".empty").show();
-					}
-				}
-				
-			}
+		jQuery(document).on("click","#closeprivatewindow",function(e){
+			jQuery("#privatewindow").remove();
 		});
 	}
 } 

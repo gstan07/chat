@@ -1,4 +1,5 @@
 @import "reset.less";
+@import "animate.less";
 @phone:    ~"only screen and (max-width: 480px)";
 @retina: ~"only screen and (-webkit-min-device-pixel-ratio: 1.5)",
 ~"only screen and (min--moz-device-pixel-ratio: 1.5)",
@@ -26,6 +27,23 @@ body{
 			position: fixed;
 			border-top:1px solid #ccc;
 		}
+		.counter{
+					display:inline-block;
+					background-color: #cc0000;
+					color:#fff;
+					width:16px;
+					height:16px;
+					font-size:10px;
+					position:absolute;
+					font-weight: bold;
+					right:5px;
+					top:5px;
+					border-radius: 8px;
+					line-height: 16px;
+					&[data-count='0']{
+						display: none;
+					}
+				}
 		.header{
 			width:100%;
 			background-color: #333;
@@ -52,23 +70,7 @@ body{
 				&.selected{
 					background-color:#666;
 				}
-				.counter{
-					display:inline-block;
-					background-color: #cc0000;
-					color:#fff;
-					width:16px;
-					height:16px;
-					font-size:10px;
-					position:absolute;
-					font-weight: bold;
-					right:5px;
-					top:5px;
-					border-radius: 8px;
-					line-height: 16px;
-					&[data-count='0']{
-						display: none;
-					}
-				}
+				
 			}
 		}
 		.content{
@@ -115,133 +117,55 @@ body{
 				&[data-tab="conversations"]{
 						.scroller{
 							bottom:0!important;
-						}
-
-						.top_bar{
-							background-color: #fff;
-							height:70px;
-							position: fixed;
-							top:50px;
-							width:100%;
-							background-color: #ccc;
-							
-						}
-						.private_window{
-
-							/*height:500px;*/
-							z-index:100000;
-							background-color:#ececec;
-							height:100000px;
-							position: fixed;
-							width:100%;
-							top:50px;
-
-							.scroller{
-								background-color:#ececec;
-								position:fixed!important;
-								bottom:50px!important;
-								height:auto!important;
-								top:auto!important;
-								overflow-y:scroll;
-								
-								
-							/*position: static!important*/
-							}
-							.footer{
-								//top:50px!important;
-								z-index:70000;
-							}
-							.toggler.on{
-								display: none;
-							}
-							.lastmsg{
-								display: none;
-							}
-							&.quiet{
-								width:100%;
-								display: block;
-								height:70px;
-								z-index:0;
-								position:static;
-								.scroller,.footer{
-									display: none;
-
+							.conversation{
+								position: relative;
+								height:50px;
+								margin-bottom:1px;
+								.avatar,.user,.lastmsg{
+									position: absolute;
 								}
-								.top_bar{
-									position:relative;
-									top:0;
-									border-bottom:1px solid #ccc;
 								background-color: #fff;
-									
-								}
-								/*&:first-child{
-									margin-top: 50px;
-								}*/
-								.back{
-									display:none;
-								}
-								.toggler.on{
-									display:block;
-								}
-								.lastmsg{
-									display:block;
-								}
+								padding:10px;
 								.avatar{
-									left:5px;
-								}
-								.title,.lastmsg{
-									left:50px!important;
-								}
-							}
-							&.unread{
-								.lastmsg{
-									.message{
-										font-weight: bold;
-										color:#333;	
+									top:15px;
+									img{
+										width:40px;
+										height: 40px;
+										border-radius: 20px;
 									}
-									
 								}
-							}
-							.title{
-								font-size:18px;
-								display: inline-block;
-								font-weight: lighter;
-								position: absolute;
-								left:120px;
-								top:15px;
-							}
-							span.lastmsg{
-								font-size:11px;
-								position: absolute;
-								left:120px;
-								top:40px;
 								.user{
+									left:60px;
+									top:20px;
+
+								}
+								.lastmsg{
 									color:#999;
+									font-size:12px;
+									left:60px;
+									top:40px;
+									div{
+										display: inline;
+									}
+									.time{
+										color:#ccc;
+										padding-left:20px;
+									}
 								}
-								.message{
-									color:#999;
+								&.unread{
+									.lastmsg{
+										color:#000;
+										.message{
+											font-weight: bold;
+										}
+									}
+
 								}
-								.time{
-									position:relative;
-									left:20px;
-									color:#ccc;
-									font-style: italic;
-								}
-							}
-							.avatar{
-								position: absolute;
-								top:7;
-								right:5px;
-								img{
-									width:50px;
-								}
-							}
-							.back{
-								position: absolute;
-								top:25px;
-								left:5px;
 							}
 						}
+
+						
+						
 					
 				}
 				&[data-tab="settings"]{
@@ -296,5 +220,46 @@ body{
 			}
 		}
 	}
+	.private_window{
+		
+	    position: fixed;
+    	width: 100%;
+    	height: 100%;
+    	background-color: #fff;
+    	.top_bar{
+    		background-color: cyan;
+    		height:50px;
+    		position: relative;
+    		text-align: center;
+    		.avatar{
+    			img{
+    				width:40px;
+    				position: absolute;
+    				right:5px;
+    				top:5px;
+    			}
+    		}
+    		.back{
+    			position: fixed;
+    			left:5px;
+    		}
+    		.counter{
 
+    		}
+    	}
+    	.chatlines{
+    		background-color:#ececec;
+    		position: fixed;
+    		bottom:50px;
+    		top:50px;
+    		width:100%;
+    		.wrapper{
+    			position: absolute;
+    			bottom:0px;
+    			background-color: #ececec;
+    			width: 100%;
+    			overflow-y:scroll;
+    		}
+    	}
+	}
 }
