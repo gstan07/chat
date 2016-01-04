@@ -56,7 +56,10 @@
 				<a class="tab" data-tab="conversations" href="#">
 					<img src="images/conversations.svg" class="icon"/>
 					<span class="counter" data-count="0">0</span></a>
-				<a class="tab" data-tab="settings" href="#"><%=username%></a>
+				<a class="tab" data-tab="settings" href="#">
+					<img class="icon avatar" src="<%=userimage%>"/>
+				<!--<%=username%>-->
+				</a>
 			</div>
 			<div class="content">
 				<div class="appview" style="display:block" data-tab="mainchat">
@@ -71,7 +74,19 @@
 				<div class="appview" data-tab="userslist">
 					<div class="scroller">
 						<% _.each(users, function(user) { %> 
-						    <div class="user" data-user="<%= user %>"><%= user %></div>
+							<%if(user.state){
+
+								%>
+
+								<div class="user" data-user="<%= user.state.username %>">
+						    <img class="avatar" src="<%=user.state.userimage%>"/>
+						    <%= user.state.username %>
+						    </div>
+
+								<%
+
+							}%>
+						    
 						<% }); %>
 					</div>
 				</div>
@@ -98,11 +113,15 @@
 	</script>
 	<script type="text/html" id="user_item_template">
 		
-		<div class="user" data-user="<%=user%>"><%=user%></div>	
+		<div class="user" data-user="<%=user%>">
+			<img class="avatar"/>
+			<%=user%>
+		</div>	
 		
 	</script>
 	<script type="text/html" id="chatline">
 		<div data-chat-id="<%=user%><%=time%>" class="chatline" data-author="<%=user%>">
+			<img src="<%=avatar%>" class="avatar"/>
 			<span class="user"><%=user%></span>
 			<span class="message"><%=message%></span>
 			<span class="time" data-livestamp="<%=time%>">&nbsp;</span>
@@ -111,7 +130,7 @@
 	<script type="text/html" id="conversation_user">
 		<div class="conversation" data-room="<%=room%>" data-partner="<%=partner%>" data-channel="<%=channel%>" data-lastmsg="<%=lastmessagetime%>">
 								<div class="avatar">
-									<img src="https://cdn0.iconfinder.com/data/icons/user-pictures/100/matureman1-128.png"/>
+									<img src="<%=avatar%>"/>
 								</div>
 								<div class="user"><%=user%></div>
 								<div class="lastmsg">
@@ -126,7 +145,7 @@
 			<div class="top_bar">
 			<a href="#" id="closeprivatewindow" class="back">back <span class="counter animated zoomIn" data-count="0">0</span></a>
 				<div class="avatar">
-					<img src="https://cdn4.iconfinder.com/data/icons/unigrid-human/52/011_user_profile_avatar_woman_girl_round-64.png"/>
+					<img src="<%=partner_avatar_url%>"/>
 				</div>
 				
 			<span class="title">

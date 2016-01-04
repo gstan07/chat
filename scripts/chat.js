@@ -11,7 +11,13 @@ var chatApp = {
 		},
 		allow_guest_user:true,
 		main_channel_name:"main",
-		warn_on_reload:false
+		warn_on_reload:false,
+		admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
+		guest_image:[
+			"https://cdn0.iconfinder.com/data/icons/user-pictures/100/matureman1-128.png",
+			"http://31.media.tumblr.com/avatar_b2e548e2cec8_128.png",
+			"http://thumbs.dreamstime.com/m/profile-icon-male-avatar-portrait-casual-person-silhouette-face-flat-design-vector-47075235.jpg"
+			][Math.floor(Math.random() * 3)]
 	},
 	init:function(){
 		chatApp["private_messages"] = [];
@@ -55,32 +61,36 @@ var chatApp = {
     			console.log("user subscribed to main channel",m)
     			//subscribing user to his private channel
     			chatApp.subscribeToChannel({
-    				channel:chatApp.username,
+    				channel:chatApp.userstate.username,
     				onSubscribe:function(m){
     					//user subscribed to his private channel
     					console.log("user subscribed to his private channel channel",m)
     					//getting the users list on the main channel
     					chatApp.chat_service.here_now({
+    						state:true,
     						channel:chatApp.config.main_channel_name,
     						callback:function(m){
     							//list of users received
     							chatApp["main_channel_initial_state"] = m;
+
     							
 
     							//getting the history of the private channel
     							chatApp.chat_service.history({
-    								channel:chatApp.username,
+    								channel:chatApp.userstate.username,
     								callback:function(m){
     									//history received
     									console.log("private channel history received",m)
     									//rendering chat
+
 		    							chatApp.renderTemplate({
 								    		template:"#chatwindow",
 								    		data:{
 								    			users:chatApp.main_channel_initial_state.uuids,
 								    			mainchannelname:chatApp.config.main_channel_name,
 								    			occupancy:chatApp.main_channel_initial_state.occupancy,
-								    			username:chatApp.username
+								    			username:chatApp.userstate.username,
+								    			userimage:chatApp.userstate.userimage
 								    		},
 								    		onRender:function(content){
 								    			//rendering chat
@@ -92,9 +102,10 @@ var chatApp = {
 								    				
 														from:"Chat admin",
 														type:"text",
-														text:"Hello, "+chatApp.username+"! Welcome to the chat!",
+														text:"Hello, "+chatApp.userstate.username+"! Welcome to the chat!",
 														channel:chatApp.config.main_channel_name,
-														time:new Date().getTime()/1000
+														time:new Date().getTime()/1000,
+														avatar:chatApp.config.admin_image
 													
 								    			})
 								    			chatApp.spinner.hide();
@@ -179,7 +190,8 @@ var chatApp = {
 			connect:subscription.onSubscribe,
 			message:subscription.onMessageReceived,
 			hearthbeat:subscription.hearthbeat,
-			presence:subscription.presence
+			presence:subscription.presence,
+			state:chatApp.userstate
 		}
 		chatApp.chat_service.subscribe(subscription);
 	},
@@ -188,39 +200,49 @@ var chatApp = {
 		switch(presence.action){
 			case "leave":
 			case "timeout":
-				chatApp.handleUserleave(presence.uuid);
+				chatApp.handleUserleave(presence);
 			break;
 			case "join":
-				chatApp.handleUserJoin(presence.uuid);
+				chatApp.handleUserJoin(presence);
+				//set avatar in user list
 			break;
 		}
 	},
-	handleUserleave:function(user){
+	handleUserleave:function(presence){
 		//remove user from list
-		jQuery("[data-tab=userslist] [data-user="+user+"]").remove();
+		jQuery("[data-tab=userslist] [data-user="+presence.uuid+"]").remove();
 		//todo: if the user have opened privates, notice his partners
 		//todo:notice main chat
 	},
-	handleUserJoin:function(user){
+	handleUserJoin:function(presence){
+		
 		chatApp.renderTemplate({
 			template:"#user_item_template",
-			data:{user:user},
+			data:{user:presence.uuid},
 			onRender:function(content){
 				//if the user is not in the list, add it
 				
-				if(jQuery("[data-tab=userslist] [data-user="+user+"]").length==0){
+				if(jQuery("[data-tab=userslist] [data-user="+presence.uuid+"]").length==0){
 					var users_list = jQuery(".appview[data-tab='userslist'] .scroller");
 					users_list.append(content);
 				}
+
+				
+				
 			}
 		});
+		//add avatar to users
+		if(typeof(presence.data)!="undefined"){
+			jQuery("[data-tab=userslist] [data-user="+presence.uuid+"] .avatar").attr("src",presence.data.userimage)	
+		}
 	},
 	say:function(m){
 		//send message to channel
 		m.message["time"] = new Date().getTime()/1000;
+		m.message["state"] = chatApp.userstate;
 		chatApp.chat_service.publish(m);
 	},
-	updateChatWindow:function(m){
+	updateChatWindow:function(m){//update main chat window
 		if(m.type == "text"){
 			if(m.channel == chatApp.config.main_channel_name){
 				var chat_window = jQuery(".scroller[data-channel='"+m.channel+"']");
@@ -231,7 +253,8 @@ var chatApp = {
 					data:{
 						user:m.from,
 						message:m.text,
-						time:m.time
+						time:m.time,
+						avatar:m.avatar
 					},
 					onRender:function(content){
 						jQuery(content).appendTo(chat_window);
@@ -255,7 +278,7 @@ var chatApp = {
 	openPrivateWindow:function(partner,channel){
 		if(jQuery(".private_window").length == 0){
 			
-			var room_name = chatApp.getPrivateWindowName(partner,chatApp.username);
+			var room_name = chatApp.getPrivateWindowName(partner,chatApp.userstate.username);
 			//make the conversation item unread
 			console.log(room_name);
 			jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
@@ -265,7 +288,8 @@ var chatApp = {
 				data:{
 					partner:partner,
 					room:room_name,
-					channel:channel
+					channel:channel,
+					partner_avatar_url:jQuery(".user[data-user='"+partner+"'] .avatar").attr("src")
 				},
 				onRender:function(private_window_layout){
 					
@@ -279,7 +303,8 @@ var chatApp = {
 								data:{
 									user:message.from,
 									message:message.text,
-									time:message.time
+									time:message.time,
+									avatar:message.avatar
 								},
 								onRender:function(content){
 									content = jQuery(content);
@@ -327,9 +352,9 @@ var chatApp = {
 	onPrivateMessageReceived:function(m){
 		//check if the current user should see the message
 		var room_name = m.room;
-		if(m.from == chatApp.username || //from the current user
-			m.channel == chatApp.username || //to the current user
-			m.room == chatApp.getPrivateWindowName(m.from,chatApp.username)){//from partner in conversation with the current user
+		if(m.from == chatApp.userstate.username || //from the current user
+			m.channel == chatApp.userstate.username || //to the current user
+			m.room == chatApp.getPrivateWindowName(m.from,chatApp.userstate.username)){//from partner in conversation with the current user
 			chatApp.private_messages.push(m);
 			//update private chat window if necesary
 			var private_window = jQuery(".private_window[data-room='"+m.room+"']");
@@ -339,7 +364,8 @@ var chatApp = {
 					data:{
 						user:m.from,
 						message:m.text,
-						time:m.time
+						time:m.time,
+						avatar:m.avatar
 					},
 					onRender:function(content){
 						var private_window_scroller = private_window.find(".wrapper")
@@ -352,7 +378,7 @@ var chatApp = {
 			}
 			//update conversations list
 			jQuery(chatApp.private_messages).each(function(index,message){
-				if(message.from == chatApp.username){
+				if(message.from == chatApp.userstate.username){
 					var partner = message.channel;
 					var from = "you";
 				}else{
@@ -374,7 +400,8 @@ var chatApp = {
 							room:message.room,
 							lastmessage:message.text,
 							lastmessagetime:message.time,
-							channel:message.channel
+							channel:message.channel,
+							avatar:message.avatar
 						},
 						onRender:function(content){
 							jQuery(".conversations_container .empty").remove();
@@ -445,9 +472,14 @@ var chatApp = {
 		});
 		//click to sign in as guest
 		jQuery(document).on("click","#signinasguest",function(){
+			chatApp["userstate"] = {
+				username:jQuery(this).attr("data-guestname"),
+				userimage:chatApp.config.guest_image,
+				is_typing:false
+			};
 			chatApp["username"] = jQuery(this).attr("data-guestname");
 			chatApp.spinner.show();
-			chatApp.startChat(chatApp.username);
+			chatApp.startChat(chatApp.userstate.username);
 		});
 		//try to prevent reload
 		if(chatApp.config.warn_on_reload){
@@ -489,18 +521,19 @@ var chatApp = {
 				button.css({"visibility":"hidden"});
 				chatApp.say({
 					message:{
-						from:chatApp.username,
+						from:chatApp.userstate.username,
 						room:jQuery(this).closest("[data-room]").attr("data-room"),
 						type:"text",
 						text:input.val(),
-						channel:channel
+						channel:channel,
+						avatar:chatApp.userstate.userimage
 					},
 					channel:channel
 				});
 				input.val("");
 			}else if(e.keyCode == 38  && input.val() == ""){
 				// bring back last message for resending
-				var last_message_on_channel = jQuery(".scroller[data-channel='"+channel+"'] .chatline[data-author='"+chatApp.username+"']").last().find(".message");
+				var last_message_on_channel = jQuery(".scroller[data-channel='"+channel+"'] .chatline[data-author='"+chatApp.userstate.username+"']").last().find(".message");
 				if(last_message_on_channel.length == 1){
 					input.val(last_message_on_channel.html());
 					button.css({"visibility":"visible"})
@@ -517,11 +550,12 @@ var chatApp = {
 				var room = input.closest("[data-room]").attr("data-room");
 				chatApp.say({
 					message:{
-						from:chatApp.username,
+						from:chatApp.userstate.username,
 						room:room,
 						type:"text",
 						text:input.val(),
-						channel:channel
+						channel:channel,
+						avatar:chatApp.userstate.userimage
 					},
 					channel:channel
 				});
@@ -536,15 +570,15 @@ var chatApp = {
 		//clicking a user
 		jQuery(document).on("click","[data-user]",function(){
 			var partner = jQuery(this).attr("data-user");
-			if(partner != chatApp.username){
+			if(partner != chatApp.userstate.username){
 				//jQuery(".private_window").addClass("quiet");
 				chatApp.openPrivateWindow(partner,partner);
 			
-				if(partner != chatApp.username){
+				if(partner != chatApp.userstate.username){
 					chatApp.subscribeToChannel({
 						channel:partner,
 						onSubscribe:function(){
-							console.log(chatApp.username+" subscribed to private channel of "+ partner);
+							console.log(chatApp.userstate.username+" subscribed to private channel of "+ partner);
 						},
 						onMessageReceived:function(m){
 							//partner private channel

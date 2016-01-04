@@ -63,10 +63,7 @@ body{
 			.tab{
 				display: inline-block;
 				position:relative;
-				width:100px;
-				@media @phone{
-					width: 20%;	
-				}
+				width:60px;
 				text-align: center;
 				color:@grey1;
 				float:left;
@@ -78,14 +75,27 @@ body{
 				&:last-child{
 					float:right;
 					border:none;
+					width:40px;
+					/*padding-right:20px;*/
+					/*@media @phone{
+						width: 25%;	
+					}*/
+					
 				}
 				&.selected{
 					background-color:@main_tab_selected;
 				}
 				.icon{
-					width:25px;
+					width:24px;
 					position: relative;
 					top:16px;
+					&.avatar{
+						top:5px;
+						width: 40px;
+						height: 40px;
+						border-radius:20px;
+						//left:20px;
+					}
 				}
 				.occupancy{
 					position: absolute;
@@ -113,6 +123,12 @@ body{
 						padding:10px;
 						background-color: #fff;
 						margin:5px;
+						.avatar{
+							width:40px;
+							border:1px solid #ccc;
+							border-radius: 20px;
+							vertical-align: middle;
+						}
 					}
 					.scroller{
 						bottom:0;
@@ -231,10 +247,25 @@ body{
 			}
 		}
 		.chatline{
-			padding:10px;
+			position: relative;
+			line-height: 18px;
+			.avatar{
+				position: absolute;
+				left:10px;
+				width:40px;
+				border:1px solid #ccc;
+				border-radius:20px;
+			}
+			padding-left:60px;
+			/*padding-top:5px;*/
+			padding-right:10px;
+			padding-bottom:25px;
+
 			.user{
+				padding-top:5px;
+				display: inline-block;
 				font-weight: bold;
-				padding-right:20px;
+				padding-right:10px;
 			}
 			.time{
 				color:#ccc;
@@ -260,11 +291,11 @@ body{
     		.avatar{
     			position: absolute;
     				right:10px;
-    				top:10px;
+    				top:5px;
     			img{
-    				width:30px;
-    				height: 30px;
-    				border-radius: 15px;
+    				width:40px;
+    				height: 40px;
+    				border-radius: 20px;
     			}
     		}
     		.back{
