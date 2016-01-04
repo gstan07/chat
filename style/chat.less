@@ -7,9 +7,18 @@
 ~"only screen and (min-device-pixel-ratio: 1.5)",
 ~"only screen and (min-resolution: 144dpi)";
 
+@grey1:#ececec;
+@main_header:#0091EA;/*main header*/
+@main_tab_selected:#1565C0;
+
+@private_header:#009688;
+
+@white1:#ffffff;
+
+
 body{
 	overflow: hidden;
-	background-color: #ececec;
+	background-color: @grey1;
 }
 #chatapp{
 	font-family: Helvetica;
@@ -25,6 +34,8 @@ body{
 	.chatwindow{
 		.header,.footer{
 			position: fixed;
+		}
+		.footer{
 			border-top:1px solid #ccc;
 		}
 		.counter{
@@ -46,7 +57,7 @@ body{
 				}
 		.header{
 			width:100%;
-			background-color: #333;
+			background-color: @main_header;
 			color:#fff;
 			height:50px;
 			.tab{
@@ -57,9 +68,10 @@ body{
 					width: 20%;	
 				}
 				text-align: center;
-				color:#ececec;
+				color:@grey1;
 				float:left;
-				border-right: 1px solid #ccc;
+				//border-right: 1px solid #ccc;
+				padding:0 10px;
 				height:50px;
 				line-height:50px;
 				text-decoration: none;
@@ -68,19 +80,30 @@ body{
 					border:none;
 				}
 				&.selected{
-					background-color:#666;
+					background-color:@main_tab_selected;
 				}
-				
+				.icon{
+					width:25px;
+					position: relative;
+					top:16px;
+				}
+				.occupancy{
+					position: absolute;
+					font-size:12px;
+					top:10px;
+					line-height: 12px;
+				}
 			}
 		}
 		.content{
 			.appview{
 				display: none;
 				.scroller{
+					-webkit-overflow-scrolling: touch;
 					position:fixed;
 					top:50px;
 					width:100%;
-					background-color: #ececec;
+					background-color: @grey1;
 					bottom:50px;
 					vertical-align: bottom;
 					overflow-y:scroll;
@@ -100,17 +123,18 @@ body{
 						position:static;
 						top:50px;
 						width:100%;
-						background-color: #ececec;
+						background-color: @grey1;
 						bottom:50px;
 						vertical-align: bottom;
 						overflow-y:auto;
 						.scroller{
-							background-color:#ececec;
+							background-color:@grey1;
 							position:fixed!important;
 							bottom:50px!important;
 							height:auto!important;
 							top:auto!important;
 							overflow-y:scroll;
+							-webkit-overflow-scrolling: touch;
 						}
 					}
 				}
@@ -228,28 +252,39 @@ body{
     	height: 100%;
     	background-color: #fff;
     	.top_bar{
-    		background-color: cyan;
+    		background-color: @private_header;
+    		color:@white1;
     		height:50px;
     		position: relative;
     		text-align: center;
     		.avatar{
+    			position: absolute;
+    				right:10px;
+    				top:10px;
     			img{
-    				width:40px;
-    				position: absolute;
-    				right:5px;
-    				top:5px;
+    				width:30px;
+    				height: 30px;
+    				border-radius: 15px;
     			}
     		}
     		.back{
-    			position: fixed;
-    			left:5px;
+    			position: absolute;
+    			left:10px;
+    			top:15px;
+    			color:#fff;
+    			text-decoration: none;
     		}
     		.counter{
-
+    			top:-13px;
+    			right:-13px;
+    		}
+    		.title{
+    			position: relative;
+    			top:15px;
     		}
     	}
     	.chatlines{
-    		background-color:#ececec;
+    		background-color:@grey1;
     		position: fixed;
     		bottom:50px;
     		top:50px;
@@ -257,9 +292,10 @@ body{
     		.wrapper{
     			position: absolute;
     			bottom:0px;
-    			background-color: #ececec;
+    			background-color: @grey1;
     			width: 100%;
     			overflow-y:scroll;
+    			-webkit-overflow-scrolling: touch;
     		}
     	}
 	}

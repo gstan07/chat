@@ -47,9 +47,15 @@
 	<script type="text/html" id="chatwindow">
 		<div class="chatwindow">
 			<div class="header">
-				<a class="tab selected" data-tab="mainchat" href="#">main</a>
-				<a class="tab" data-tab="userslist" href="#">Users:<span class="occupancy" id="main_occupancy"> <%=occupancy%></span></a>
-				<a class="tab" data-tab="conversations" href="#">Conversations<span class="counter" data-count="0">0</span></a>
+				<a class="tab selected" data-tab="mainchat" href="#">
+					<img src="images/chat.svg" class="icon"/>
+				</a>
+				<a class="tab" data-tab="userslist" href="#">
+				<img src="images/users.svg" class="icon"/>
+				<span class="occupancy" id="main_occupancy"> <%=occupancy%></span></a>
+				<a class="tab" data-tab="conversations" href="#">
+					<img src="images/conversations.svg" class="icon"/>
+					<span class="counter" data-count="0">0</span></a>
 				<a class="tab" data-tab="settings" href="#"><%=username%></a>
 			</div>
 			<div class="content">
@@ -96,7 +102,7 @@
 		
 	</script>
 	<script type="text/html" id="chatline">
-		<div data-chat-id="<%=user%><%=time%>" class="chatline animated fadeIn" data-author="<%=user%>">
+		<div data-chat-id="<%=user%><%=time%>" class="chatline" data-author="<%=user%>">
 			<span class="user"><%=user%></span>
 			<span class="message"><%=message%></span>
 			<span class="time" data-livestamp="<%=time%>">&nbsp;</span>

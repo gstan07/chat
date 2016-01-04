@@ -283,11 +283,8 @@ var chatApp = {
 								},
 								onRender:function(content){
 									content = jQuery(content);
-
 									content.appendTo("#privatewindow[data-room='"+room_name+"'] .wrapper");
-									var private_window_scroller = jQuery("#privatewindow .wrapper");
-									//todo make this work
-									private_window_scroller.scrollTop(private_window_scroller[0].scrollHeight)
+									
 								}
 							});
 						}
@@ -296,6 +293,9 @@ var chatApp = {
 					jQuery(".private_window").find(".wrapper").css({
 						"max-height":chatApp.scrollerheight
 					})
+
+					var private_window_scroller = jQuery("#privatewindow .wrapper");
+					private_window_scroller.scrollTop(private_window_scroller[0].scrollHeight)
 				}
 			});
 		}
