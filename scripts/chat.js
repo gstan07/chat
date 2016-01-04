@@ -256,6 +256,9 @@ var chatApp = {
 		if(jQuery(".private_window").length == 0){
 			
 			var room_name = chatApp.getPrivateWindowName(partner,chatApp.username);
+			//make the conversation item unread
+			console.log(room_name);
+			jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
 			
 			chatApp.renderTemplate({
 				template:"#private_conversation",
@@ -265,8 +268,6 @@ var chatApp = {
 					channel:channel
 				},
 				onRender:function(private_window_layout){
-					jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
-					var wrapper_max_height = jQuery(window).height()-100;
 					
 					jQuery(private_window_layout).appendTo(".chatwindow");
 					chatApp.updatePrivateNottificationBubble();
@@ -282,7 +283,11 @@ var chatApp = {
 								},
 								onRender:function(content){
 									content = jQuery(content);
+
 									content.appendTo("#privatewindow[data-room='"+room_name+"'] .wrapper");
+									var private_window_scroller = jQuery("#privatewindow .wrapper");
+									//todo make this work
+									private_window_scroller.scrollTop(private_window_scroller[0].scrollHeight)
 								}
 							});
 						}
@@ -321,7 +326,7 @@ var chatApp = {
 	},
 	onPrivateMessageReceived:function(m){
 		//check if the current user should see the message
-		
+		var room_name = m.room;
 		if(m.from == chatApp.username || //from the current user
 			m.channel == chatApp.username || //to the current user
 			m.room == chatApp.getPrivateWindowName(m.from,chatApp.username)){//from partner in conversation with the current user
@@ -355,18 +360,18 @@ var chatApp = {
 					var from = message.from;
 				}
 
-				var room_name = message.room;
 				
-				var conversation_item = jQuery(".conversation[data-room='"+room_name+"']");
+				
+				var conversation_item = jQuery(".conversation[data-room='"+message.room+"']");
 				if(conversation_item.length == 0){
-					// console.log("will render new conversation item because: ",room_name,conversation_item,message);
+					
 					chatApp.renderTemplate({
 						template:"#conversation_user",
 						data:{
 							partner:partner,
 							user:partner,
 							lastmessagefrom:from,
-							room:room_name,
+							room:message.room,
 							lastmessage:message.text,
 							lastmessagetime:message.time,
 							channel:message.channel
@@ -375,22 +380,34 @@ var chatApp = {
 							jQuery(".conversations_container .empty").remove();
 							jQuery(content).appendTo(".conversations_container");
 							if(private_window.length == 0){
-								console.log(room_name,jQuery(".conversation[data-room='"+room_name+"']").length,"unread");
-								//jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
-								jQuery(".conversation[data-room='"+room_name+"']").remove();
+								
+								jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
+								
 							}
 						}
 					});
 				}else{
+					conversation_item.data("lastmsg",message.time);
 					conversation_item.find(".lastmsg .from").html(from);
 					conversation_item.find(".lastmsg .message").html(message.text);
 					conversation_item.find(".lastmsg .time").attr("data-livestamp",message.time);
-					if(private_window.length == 0){
+					if(private_window.length == 0 && room_name!=""){
+						
 						jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
 					}
 				}
 				
 			});
+			//reordering conversations list
+			var conversation_items = $(".conversation[data-room]");
+			if(conversation_items.length > 0){
+				conversation_items.sort(function(a, b){
+				    return $(b).data("lastmsg")-$(a).data("lastmsg")
+				});
+				$(".conversations_container").html(conversation_items);	
+			}
+
+			//update nottification bubble
 			chatApp.updatePrivateNottificationBubble();
 		}
 	},

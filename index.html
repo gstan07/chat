@@ -76,15 +76,6 @@
 
 
 
-							
-
-
-							
-
-
-
-
-
 
 
 						</div>
@@ -105,14 +96,14 @@
 		
 	</script>
 	<script type="text/html" id="chatline">
-		<div data-chat-id="<%=user%><%=time%>" class="chatline" data-author="<%=user%>">
+		<div data-chat-id="<%=user%><%=time%>" class="chatline animated fadeIn" data-author="<%=user%>">
 			<span class="user"><%=user%></span>
 			<span class="message"><%=message%></span>
 			<span class="time" data-livestamp="<%=time%>">&nbsp;</span>
 		</div>
 	</script>
 	<script type="text/html" id="conversation_user">
-		<div class="conversation" data-room="<%=room%>" data-partner="<%=partner%>" data-channel="<%=channel%>">
+		<div class="conversation" data-room="<%=room%>" data-partner="<%=partner%>" data-channel="<%=channel%>" data-lastmsg="<%=lastmessagetime%>">
 								<div class="avatar">
 									<img src="https://cdn0.iconfinder.com/data/icons/user-pictures/100/matureman1-128.png"/>
 								</div>
@@ -127,7 +118,7 @@
 	<script type="text/html" id="private_conversation">
 		<div id="privatewindow" class="private_window animated" data-partner="<%=partner%>" data-room="<%=room%>">
 			<div class="top_bar">
-			<a href="#" id="closeprivatewindow" class="back">back <span class="counter" data-count="0">0</span></a>
+			<a href="#" id="closeprivatewindow" class="back">back <span class="counter animated zoomIn" data-count="0">0</span></a>
 				<div class="avatar">
 					<img src="https://cdn4.iconfinder.com/data/icons/unigrid-human/52/011_user_profile_avatar_woman_girl_round-64.png"/>
 				</div>
