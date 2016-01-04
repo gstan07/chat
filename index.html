@@ -26,21 +26,46 @@
 
 	<script type="text/html" id="loginscreen">
 		<form id="loginform">
+		<div class="row">
 			<label for="username">Username: <input required type="text" id="username" name="username"/></label>
+		</div>
+		<div class="row">
 			<label for="password">Password: <input required type="password" id="password" name="password"/></label>
+		</div>
+		<div class="row spacetop">
 			<input type="submit" value="Sign in"/>
-			<a href="#" id="register">Register</a> <a href="#" id="forgotpasswordlink">Forgot password</a> <a href="#" id="signinasguest" data-guestname="">Sign in as <strong>guestname</strong></a>
+		</div>
+			<div class="row spacetop">
+			<a href="#" id="register">Register</a>
+			</div>
+			<div class="row">
+			 <a href="#" id="forgotpasswordlink">Forgot password</a>
+			 </div>
+			 <div class="row">
+			  <a class="button quiet" href="#" id="signinasguest" data-guestname="">Sign in as <strong>guestname</strong></a>
+			  	<label><small><strong>Note:</stong> Guest users cannot...</small></label>
+			  </div>
 
 		</form>
 	</script>
 	
 	<script type="text/html" id="registerscreen">
 		<form id="registerform">
-			<label for="register_username">Username: <input required type="text" id="register_username" name="username"/></label>
-			<label for="register_email">Email: <input required type="email" id="register_email" name="email"/>
-			<label for="register_password">Password: <input required type="password" id="register_password" name="password"/></label>
+		<div class="row">
+			<label for="register_username">Username: <small>This is how others will know you </small><input required type="text" id="register_username" name="username"/></label>
+			</div>
+			<div class="row">
+			<label for="register_email">Email:<small>It has to be a valid email address</small> <input required type="email" id="register_email" name="email"/>
+			</div>
+			<div class="row">
+			<label for="register_password">Password:<small>Choose a secure password</small> <input required type="password" id="register_password" name="password"/></label>
+			</div>
+			<div class="row spacetop">
 			<input type="submit" value="Register"/>
+			</div>
+			<div class="row spacetop">
 			<a href="#" id="backtologin">Back to login?</a>
+			</div>
 		</form>
 	</script>
 	
@@ -78,10 +103,14 @@
 
 								%>
 
-								<div class="user" data-user="<%= user.state.username %>">
+								<a class="user" data-user="<%= user.state.username %>">
 						    <img class="avatar" src="<%=user.state.userimage%>"/>
 						    <%= user.state.username %>
-						    </div>
+						    
+						    	
+						    	
+
+						    </a>
 
 								<%
 
@@ -113,10 +142,10 @@
 	</script>
 	<script type="text/html" id="user_item_template">
 		
-		<div class="user" data-user="<%=user%>">
+		<a class="user" data-user="<%=user%>">
 			<img class="avatar"/>
 			<%=user%>
-		</div>	
+		</a>	
 		
 	</script>
 	<script type="text/html" id="chatline">
@@ -143,7 +172,9 @@
 	<script type="text/html" id="private_conversation">
 		<div id="privatewindow" class="private_window animated" data-partner="<%=partner%>" data-room="<%=room%>">
 			<div class="top_bar">
-			<a href="#" id="closeprivatewindow" class="back">back <span class="counter animated zoomIn" data-count="0">0</span></a>
+			<a href="#" id="closeprivatewindow" class="back">
+			<img src="images/back.svg"/>
+			<span class="counter animated zoomIn" data-count="0">0</span></a>
 				<div class="avatar">
 					<img src="<%=partner_avatar_url%>"/>
 				</div>
@@ -155,7 +186,7 @@
 
 			<div class="chatlines">
 				<div class="wrapper">
-					start
+					<div class="empty">Start a private conversation with <%=partner%></div>
 				</div>
 				
 			</div>

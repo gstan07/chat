@@ -10,7 +10,7 @@ var chatApp = {
 			subscribe_key:"sub-c-e79abdf4-ad90-11e5-ae71-02ee2ddab7fe",
 		},
 		allow_guest_user:true,
-		main_channel_name:"main",
+		main_channel_name:"mainchat",
 		warn_on_reload:false,
 		admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
 		guest_image:[
@@ -298,6 +298,7 @@ var chatApp = {
 					//inserting history if exists
 					jQuery(chatApp.private_messages).each(function(index,message){
 						if(message.room == room_name){
+							jQuery(".private_window .empty").remove();
 							chatApp.renderTemplate({
 								template:"#chatline",
 								data:{
@@ -359,6 +360,7 @@ var chatApp = {
 			//update private chat window if necesary
 			var private_window = jQuery(".private_window[data-room='"+m.room+"']");
 			if(private_window.length == 1){
+				jQuery(".private_window .empty").remove();
 				chatApp.renderTemplate({
 					template:"#chatline",
 					data:{

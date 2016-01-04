@@ -9,7 +9,7 @@
 
 @grey1:#ececec;
 @main_header:#0091EA;/*main header*/
-@main_tab_selected:#1565C0;
+
 
 @private_header:#009688;
 
@@ -21,6 +21,9 @@ body{
 	background-color: @grey1;
 }
 #chatapp{
+	position: fixed;
+	height:100%;
+	width:100%;
 	font-family: Helvetica;
 	.spinner{
 		position: fixed;
@@ -83,7 +86,7 @@ body{
 					
 				}
 				&.selected{
-					background-color:@main_tab_selected;
+					background-color:darken(@main_header,10%);
 				}
 				.icon{
 					width:24px;
@@ -120,14 +123,19 @@ body{
 				}
 				&[data-tab="userslist"]{
 					.user{
+						/*width:100%;*/
+						display: block;
 						padding:10px;
 						background-color: #fff;
 						margin:5px;
+						cursor: pointer;
+						color:#333;
 						.avatar{
 							width:40px;
 							border:1px solid #ccc;
 							border-radius: 20px;
 							vertical-align: middle;
+							margin-right:5px;
 						}
 					}
 					.scroller{
@@ -300,10 +308,24 @@ body{
     		}
     		.back{
     			position: absolute;
-    			left:10px;
-    			top:15px;
+    			left:0px;
+    			top:0px;
     			color:#fff;
+    			line-height: 50px;
+    			font-weight: bold;
     			text-decoration: none;
+    			height:50px;
+    			width:100px;
+    			text-align: left;
+    			&:active{
+    				background-color:darken(@private_header,5%)
+    			}
+    			img{
+    				position: absolute;
+    				left:10px;
+    				width:20px;
+    				top:16px;
+    			}
     		}
     		.counter{
     			top:-13px;
@@ -311,7 +333,7 @@ body{
     		}
     		.title{
     			position: relative;
-    			top:15px;
+    			top:17px;
     		}
     	}
     	.chatlines{
@@ -329,5 +351,69 @@ body{
     			-webkit-overflow-scrolling: touch;
     		}
     	}
+	}
+	.empty{
+		color:#ccc;
+		padding:100px;
+		text-align: center;
+		font-style: italic;
+	}
+	div.row{
+		
+		margin-bottom:10px;
+		&.spacetop{
+			margin-top:20px;
+		}
+		&.spacebottom{
+			margin-bottom:20px;
+		}
+	}
+	a{
+		color:@main_header;
+		text-decoration: none;
+	}
+	form{
+		width:280px;
+		@media @phone{
+			width: 90%;
+		}
+		margin:20px auto;
+		
+		label{
+			display: block;
+			line-height:30px;
+			input{
+				display: block;
+				padding:10px;
+				width:100%;
+				border-radius:0;
+				
+			}
+			small{
+				display: block;
+				font-size:12px;
+				color:#666;
+			}
+
+		}
+		a.button,input[type='submit']{
+				display: block;
+				
+				width:100%;
+				background-color: @main_header;
+				color:#fff;
+				width:100%;
+				border:none;
+				padding:10px 0;
+				border-radius: 0;
+				font-size:16px;
+				text-transform: uppercase;
+				-webkit-appearance: none;
+				text-align: center;
+				display: block;
+				&.quiet{
+					background-color: darken(@grey1,20%);
+				}
+			}
 	}
 }
