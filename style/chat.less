@@ -387,6 +387,7 @@ body{
 				padding:10px;
 				width:100%;
 				border-radius:0;
+				font-size:16px;
 				
 			}
 			small{
@@ -412,7 +413,10 @@ body{
 				text-align: center;
 				display: block;
 				&.quiet{
-					background-color: darken(@grey1,20%);
+					background-color: lighten(@main_header,30%);
+				}
+				&.special{
+					background-color: magenta;
 				}
 			}
 	}
