@@ -17,7 +17,8 @@ var chatApp = {
 			"https://cdn0.iconfinder.com/data/icons/user-pictures/100/matureman1-128.png",
 			"http://31.media.tumblr.com/avatar_b2e548e2cec8_128.png",
 			"http://thumbs.dreamstime.com/m/profile-icon-male-avatar-portrait-casual-person-silhouette-face-flat-design-vector-47075235.jpg"
-			][Math.floor(Math.random() * 3)]
+			][Math.floor(Math.random() * 3)],
+		admin_username:"Chat Admin"
 	},
 	init:function(){
 		chatApp["private_messages"] = [];
@@ -38,7 +39,7 @@ var chatApp = {
 					chatApp.spinner.hide();
 					jQuery("#username").focus();
 					if(chatApp.config.allow_guest_user){
-						var guestname = "guest_"+Math.floor(Math.random()*1000);
+						var guestname = "guest_"+Math.floor(Math.random()*100000);
 						jQuery("#signinasguest").attr("data-guestname",guestname);
 						jQuery("#signinasguest strong").html(guestname);
 					}else{
@@ -100,7 +101,7 @@ var chatApp = {
 								    			});
 								    			chatApp.updateChatWindow({
 								    				
-														from:"Chat admin",
+														from:chatApp.config.admin_username,
 														type:"text",
 														text:"Hello, "+chatApp.userstate.username+"! Welcome to the chat!",
 														channel:chatApp.config.main_channel_name,
@@ -276,11 +277,32 @@ var chatApp = {
 		nottification_bubble.html(unread_msgs);
 	},
 	openPrivateWindow:function(partner,channel){
+		var room_name = chatApp.getPrivateWindowName(partner,chatApp.userstate.username);
+		chatApp.subscribeToChannel({
+			channel:partner,
+			onSubscribe:function(){
+				console.log(chatApp.userstate.username+" subscribed to private channel of "+ partner);
+			},
+			onMessageReceived:function(m){
+				//partner private channel
+				chatApp.onPrivateMessageReceived(m);
+				//chatApp.updateChatWindow(m);
+			}
+		});
+		// if(partner != chatApp.userstate.username){
+		// 	if(jQuery(".conversation[data-room='"+room_name+"']").length == 0){//only if a conversation wasnt already started
+				
+		// 	}
+		// }else{
+		// 	var channel  = jQuery(".conversation[data-room='"+room_name+"']").attr("data-channel");
+		// }
+
+
 		if(jQuery(".private_window").length == 0){
 			
-			var room_name = chatApp.getPrivateWindowName(partner,chatApp.userstate.username);
+			
 			//make the conversation item unread
-			console.log(room_name);
+			
 			jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
 			
 			chatApp.renderTemplate({
@@ -547,14 +569,6 @@ var chatApp = {
 					}
 				});
 				input.val("");
-			}else if(e.keyCode == 38  && input.val() == ""){
-				// bring back last message for resending
-				var last_message_on_channel = jQuery(".scroller[data-channel='"+channel+"'] .chatline[data-author='"+chatApp.userstate.username+"']").last().find(".message");
-				if(last_message_on_channel.length == 1){
-					input.val(last_message_on_channel.html());
-					button.css({"visibility":"visible"})
-				}
-				
 			}
 
 		})
@@ -605,19 +619,6 @@ var chatApp = {
 				//jQuery(".private_window").addClass("quiet");
 				chatApp.openPrivateWindow(partner,partner);
 			
-				if(partner != chatApp.userstate.username){
-					chatApp.subscribeToChannel({
-						channel:partner,
-						onSubscribe:function(){
-							console.log(chatApp.userstate.username+" subscribed to private channel of "+ partner);
-						},
-						onMessageReceived:function(m){
-							//partner private channel
-							chatApp.onPrivateMessageReceived(m);
-							//chatApp.updateChatWindow(m);
-						}
-					});
-				}
 			}
 		});
 		//open private window from conversations list
@@ -632,6 +633,15 @@ var chatApp = {
 		//toggle private window
 		jQuery(document).on("click","#closeprivatewindow",function(e){
 			jQuery("#privatewindow").remove();
+		});
+
+		//clicking a user from chatline
+		jQuery(document).on("click","#mainchatscroller .chatline .user",function(e){
+			var partner = jQuery(this).closest(".chatline").attr("data-author");
+			if(partner != chatApp.userstate.username && partner != chatApp.config.admin_username){
+				console.log(partner,chatApp.userstate.username);
+				chatApp.openPrivateWindow(partner,partner);
+			}
 		});
 	}
 } 
