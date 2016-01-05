@@ -11,7 +11,9 @@
 @main_header:#0091EA;/*main header*/
 
 
-@private_header:#009688;
+//@private_header:#009688;
+@private_header:#4CAF50;
+
 
 @white1:#ffffff;
 
@@ -131,6 +133,10 @@ body{
 						margin-bottom:1px;
 						cursor: pointer;
 						color:#333;
+						&.active{
+							background-color:lighten(@private_header,40%);
+							color:@white1;
+						}
 						.avatar{
 							width:40px;
 							border:1px solid #ccc;
@@ -169,6 +175,10 @@ body{
 							.conversation{
 								width: 100%;
 								display: block;
+								&:active{
+									background-color:lighten(@private_header,40%);
+									color:@white1;
+								}
 								color:#333;
 								cursor: pointer;
 								position: relative;
@@ -291,6 +301,8 @@ body{
 		}
 	}
 	.private_window{
+		/*-webkit-animation-duration: 0.8s;*/
+		/*animation-duration: 0.8s;*/
 		z-index:10000;
 	    position: fixed;
     	width: 100%;

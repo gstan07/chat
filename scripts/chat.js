@@ -316,6 +316,7 @@ var chatApp = {
 				onRender:function(private_window_layout){
 					
 					jQuery(private_window_layout).appendTo(".chatwindow");
+					chatApp.animate(jQuery("#privatewindow"),"animated bounceInRight")
 					chatApp.updatePrivateNottificationBubble();
 					//inserting history if exists
 					jQuery(chatApp.private_messages).each(function(index,message){
@@ -461,6 +462,15 @@ var chatApp = {
 			//update nottification bubble
 			chatApp.updatePrivateNottificationBubble();
 		}
+	},
+	animate:function(element,animation,callback){
+		element.addClass(animation);
+		$(element).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+			element.removeClass(animation);	
+			if(callback){
+				callback();
+			}
+		});
 	},
 	uiBindings:function(){
 		
@@ -614,6 +624,7 @@ var chatApp = {
 
 		//clicking a user
 		jQuery(document).on("click","[data-user]",function(){
+			chatApp.animate(jQuery(this),"animated fadeIn");
 			var partner = jQuery(this).attr("data-user");
 			if(partner != chatApp.userstate.username){
 				//jQuery(".private_window").addClass("quiet");
@@ -632,7 +643,10 @@ var chatApp = {
 
 		//toggle private window
 		jQuery(document).on("click","#closeprivatewindow",function(e){
-			jQuery("#privatewindow").remove();
+			chatApp.animate(jQuery("#privatewindow"),"animated bounceOutRight",function(){
+				jQuery("#privatewindow").remove();
+			});
+			
 		});
 
 		//clicking a user from chatline
