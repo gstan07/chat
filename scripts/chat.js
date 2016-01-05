@@ -520,7 +520,13 @@ var chatApp = {
 			}
 			//send message on enter
 			if(e.keyCode == 13 && input.val()!=""){//enter
-				button.css({"visibility":"hidden"});
+				
+				input.attr({
+					"disabled":"disabled",
+					"placeholder":"wait..."
+				});
+				button.html("wait...");
+				button.attr("disabled","disabled");
 				chatApp.say({
 					message:{
 						from:chatApp.userstate.username,
@@ -530,7 +536,15 @@ var chatApp = {
 						channel:channel,
 						avatar:chatApp.userstate.userimage
 					},
-					channel:channel
+					channel:channel,
+					callback:function(){
+						input.removeAttr("disabled");
+						input.attr({"placeholder":"say something"});
+						input.focus();
+						button.removeAttr("disabled");
+						button.html("Say it");
+						button.css({"visibility":"hidden"});
+					}
 				});
 				input.val("");
 			}else if(e.keyCode == 38  && input.val() == ""){
@@ -547,9 +561,16 @@ var chatApp = {
 		//clicking the button
 		jQuery(document).on("click",".sayitbutton",function(e){
 			var input = jQuery(this).closest(".footer").find("input");
+			var button = jQuery(this);
 			if(input.val()!=""){
 				var channel = input.attr("data-channel");
 				var room = input.closest("[data-room]").attr("data-room");
+				input.attr({
+					"disabled":"disabled",
+					"placeholder":"wait..."
+				});
+				button.html("wait...");
+				button.attr("disabled","disabled");
 				chatApp.say({
 					message:{
 						from:chatApp.userstate.username,
@@ -559,7 +580,15 @@ var chatApp = {
 						channel:channel,
 						avatar:chatApp.userstate.userimage
 					},
-					channel:channel
+					channel:channel,
+					callback:function(){
+						input.removeAttr("disabled");
+						input.attr({"placeholder":"say something"});
+						input.focus();
+						button.removeAttr("disabled");
+						button.html("Say it");
+						button.css({"visibility":"hidden"});
+					}
 				});
 				jQuery(this).css({
 					"visibility":"hidden"
