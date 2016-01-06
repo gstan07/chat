@@ -120,9 +120,9 @@ var chatApp = {
     				},
     				onMessageReceived:function(m){
     					//own private channel
-    					chatApp.onPrivateMessageReceived(m);
+    					chatApp.updateChatWindow(m);
 
- 						//chatApp.onPrivateMessageReceived(m);   					
+ 						//chatApp.updateChatWindow(m);   					
     				}
     			});
     		},
@@ -238,36 +238,9 @@ var chatApp = {
 		}
 	},
 	say:function(m){
-		//send message to channel
 		m.message["time"] = new Date().getTime()/1000;
 		m.message["state"] = chatApp.userstate;
 		chatApp.chat_service.publish(m);
-	},
-	updateChatWindow:function(m){//update main chat window
-		if(m.type == "text"){
-			if(m.channel == chatApp.config.main_channel_name){
-				var chat_window = jQuery(".scroller[data-channel='"+m.channel+"']");
-			}
-			if(chat_window.length == 1 && chat_window.find(".chatline[data-chatline-id='"+m.from+m.time+"']").length == 0){
-					chatApp.renderTemplate({
-					template:"#chatline",
-					data:{
-						user:m.from,
-						message:m.text,
-						time:m.time,
-						avatar:m.avatar
-					},
-					onRender:function(content){
-						jQuery(content).appendTo(chat_window);
-
-						chat_window.animate({
-							scrollTop:chat_window[0].scrollHeight
-						})
-						
-					}
-				});
-			}
-		}
 	},
 	updatePrivateNottificationBubble:function(){
 
@@ -284,18 +257,10 @@ var chatApp = {
 				console.log(chatApp.userstate.username+" subscribed to private channel of "+ partner);
 			},
 			onMessageReceived:function(m){
-				//partner private channel
-				chatApp.onPrivateMessageReceived(m);
-				//chatApp.updateChatWindow(m);
+				chatApp.updateChatWindow(m);
 			}
 		});
-		// if(partner != chatApp.userstate.username){
-		// 	if(jQuery(".conversation[data-room='"+room_name+"']").length == 0){//only if a conversation wasnt already started
-				
-		// 	}
-		// }else{
-		// 	var channel  = jQuery(".conversation[data-room='"+room_name+"']").attr("data-channel");
-		// }
+		
 
 
 		if(jQuery(".private_window").length == 0){
@@ -373,18 +338,13 @@ var chatApp = {
 		
 
 	},
-	onPrivateMessageReceived:function(m){
-		//check if the current user should see the message
-		var room_name = m.room;
-		if(m.from == chatApp.userstate.username || //from the current user
-			m.channel == chatApp.userstate.username || //to the current user
-			m.room == chatApp.getPrivateWindowName(m.from,chatApp.userstate.username)){//from partner in conversation with the current user
-			chatApp.private_messages.push(m);
-			//update private chat window if necesary
-			var private_window = jQuery(".private_window[data-room='"+m.room+"']");
-			if(private_window.length == 1){
-				jQuery(".private_window .empty").remove();
-				chatApp.renderTemplate({
+	updateChatWindow:function(m){
+		if(m.channel == chatApp.config.main_channel_name){
+			if(m.channel == chatApp.config.main_channel_name){
+				var chat_window = jQuery(".scroller[data-channel='"+m.channel+"']");
+			}
+			if(chat_window.length == 1 && chat_window.find(".chatline[data-chatline-id='"+m.from+m.time+"']").length == 0){
+					chatApp.renderTemplate({
 					template:"#chatline",
 					data:{
 						user:m.from,
@@ -393,74 +353,100 @@ var chatApp = {
 						avatar:m.avatar
 					},
 					onRender:function(content){
-						var private_window_scroller = private_window.find(".wrapper")
-						jQuery(content).appendTo(private_window_scroller)
-						private_window_scroller.animate({
-							scrollTop:private_window_scroller[0].scrollHeight
+						jQuery(content).appendTo(chat_window);
+
+						chat_window.animate({
+							scrollTop:chat_window[0].scrollHeight
 						})
+						
 					}
 				});
 			}
-			//update conversations list
-			jQuery(chatApp.private_messages).each(function(index,message){
-				if(message.from == chatApp.userstate.username){
-					var partner = message.channel;
-					var from = "you";
-				}else{
-					var partner = message.from;
-					var from = message.from;
-				}
-
-				
-				
-				var conversation_item = jQuery(".conversation[data-room='"+message.room+"']");
-				if(conversation_item.length == 0){
-					var avatar = jQuery(".user[data-user='"+partner+"'] .avatar").attr("src");
+		}else{
+			var room_name = m.room;
+			if(m.from == chatApp.userstate.username || //from the current user
+				m.channel == chatApp.userstate.username || //to the current user
+				m.room == chatApp.getPrivateWindowName(m.from,chatApp.userstate.username)){//from partner in conversation with the current user
+				chatApp.private_messages.push(m);
+				//update private chat window if necesary
+				var private_window = jQuery(".private_window[data-room='"+m.room+"']");
+				if(private_window.length == 1){
+					jQuery(".private_window .empty").remove();
 					chatApp.renderTemplate({
-						template:"#conversation_user",
+						template:"#chatline",
 						data:{
-							partner:partner,
-							user:partner,
-							lastmessagefrom:from,
-							room:message.room,
-							lastmessage:message.text,
-							lastmessagetime:message.time,
-							channel:message.channel,
-							avatar:avatar
+							user:m.from,
+							message:m.text,
+							time:m.time,
+							avatar:m.avatar
 						},
 						onRender:function(content){
-							jQuery(".conversations_container .empty").remove();
-							jQuery(content).appendTo(".conversations_container");
-							if(private_window.length == 0){
-								
-								jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
-								
-							}
+							var private_window_scroller = private_window.find(".wrapper")
+							jQuery(content).appendTo(private_window_scroller)
+							private_window_scroller.animate({
+								scrollTop:private_window_scroller[0].scrollHeight
+							})
 						}
 					});
-				}else{
-					conversation_item.data("lastmsg",message.time);
-					conversation_item.find(".lastmsg .from").html(from);
-					conversation_item.find(".lastmsg .message").html(message.text);
-					conversation_item.find(".lastmsg .time").attr("data-livestamp",message.time);
-					if(private_window.length == 0 && room_name!=""){
-						
-						jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
-					}
 				}
-				
-			});
-			//reordering conversations list
-			var conversation_items = $(".conversation[data-room]");
-			if(conversation_items.length > 0){
-				conversation_items.sort(function(a, b){
-				    return $(b).data("lastmsg")-$(a).data("lastmsg")
+				//update conversations list
+				jQuery(chatApp.private_messages).each(function(index,message){
+					if(message.from == chatApp.userstate.username){
+						var partner = message.channel;
+						var from = "you";
+					}else{
+						var partner = message.from;
+						var from = message.from;
+					}
+					var conversation_item = jQuery(".conversation[data-room='"+message.room+"']");
+					if(conversation_item.length == 0){
+						var avatar = jQuery(".user[data-user='"+partner+"'] .avatar").attr("src");
+						chatApp.renderTemplate({
+							template:"#conversation_user",
+							data:{
+								partner:partner,
+								user:partner,
+								lastmessagefrom:from,
+								room:message.room,
+								lastmessage:message.text,
+								lastmessagetime:message.time,
+								channel:message.channel,
+								avatar:avatar
+							},
+							onRender:function(content){
+								jQuery(".conversations_container .empty").remove();
+								jQuery(content).appendTo(".conversations_container");
+								if(private_window.length == 0){
+									
+									jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
+									
+								}
+							}
+						});
+					}else{
+						conversation_item.data("lastmsg",message.time);
+						conversation_item.find(".lastmsg .from").html(from);
+						conversation_item.find(".lastmsg .message").html(message.text);
+						conversation_item.find(".lastmsg .time").attr("data-livestamp",message.time);
+						if(private_window.length == 0 && room_name!=""){
+							
+							jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
+						}
+					}
+					
 				});
-				$(".conversations_container").html(conversation_items);	
-			}
+				//reordering conversations list
+				var conversation_items = $(".conversation[data-room]");
+				if(conversation_items.length > 0){
+					conversation_items.sort(function(a, b){
+					    return $(b).data("lastmsg")-$(a).data("lastmsg")
+					});
+					$(".conversations_container").html(conversation_items);	
+				}
 
-			//update nottification bubble
-			chatApp.updatePrivateNottificationBubble();
+				//update nottification bubble
+				chatApp.updatePrivateNottificationBubble();
+			}
 		}
 	},
 	animate:function(element,animation,callback){
@@ -653,12 +639,11 @@ var chatApp = {
 		jQuery(document).on("click","#mainchatscroller .chatline .user",function(e){
 			var partner = jQuery(this).closest(".chatline").attr("data-author");
 			if(partner != chatApp.userstate.username && partner != chatApp.config.admin_username){
-				console.log(partner,chatApp.userstate.username);
 				chatApp.openPrivateWindow(partner,partner);
 			}
 		});
 	}
 } 
-jQuery(document).ready(function(){
+// jQuery(document).ready(function(){
 	chatApp.init();
-});
+// });
