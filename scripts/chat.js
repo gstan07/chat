@@ -22,6 +22,7 @@ var chatApp = {
 		use_animations:true,
 		private_window_animation_in:"bounceInRight",//animate.css
 		private_window_animation_out:"bounceOutRight",//animate.css
+		lastmessage_length_to_show:30
 	},
 	init:function(){
 		chatApp["private_messages"] = [];
@@ -417,7 +418,7 @@ var chatApp = {
 								user:partner,
 								lastmessagefrom:from,
 								room:message.room,
-								lastmessage:message.text,
+								lastmessage:message.text.substr(0,chatApp.config.lastmessage_length_to_show),
 								lastmessagetime:message.time,
 								channel:message.channel,
 								avatar:avatar
@@ -435,7 +436,7 @@ var chatApp = {
 					}else{
 						conversation_item.data("lastmsg",message.time);
 						conversation_item.find(".lastmsg .from").html(from);
-						conversation_item.find(".lastmsg .message").html(message.text);
+						conversation_item.find(".lastmsg .message").html(message.text.substr(0,chatApp.config.lastmessage_length_to_show));
 						conversation_item.find(".lastmsg .time").attr("data-livestamp",message.time);
 						if(private_window.length == 0 && room_name!=""){
 							
