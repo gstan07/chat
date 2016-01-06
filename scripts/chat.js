@@ -254,6 +254,10 @@ var chatApp = {
 		nottification_bubble.html(unread_msgs);
 	},
 	openPrivateWindow:function(partner,channel){
+		//first ensure window is removed
+		//(it can live a little too long when animated)
+		jQuery(".private_window").remove();
+
 		var room_name = chatApp.getPrivateWindowName(partner,chatApp.userstate.username);
 		chatApp.subscribeToChannel({
 			channel:partner,
@@ -267,56 +271,55 @@ var chatApp = {
 		
 
 
-		if(jQuery(".private_window").length == 0){
+		
 			
 			
-			//make the conversation item unread
-			
-			jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
-			
-			chatApp.renderTemplate({
-				template:"#private_conversation",
-				data:{
-					partner:partner,
-					room:room_name,
-					channel:channel,
-					partner_avatar_url:jQuery(".user[data-user='"+partner+"'] .avatar").attr("src")
-				},
-				onRender:function(private_window_layout){
-					
-					jQuery(private_window_layout).appendTo(".chatwindow");
-					chatApp.animate(jQuery("#privatewindow"),chatApp.config.private_window_animation_in)
-					chatApp.updatePrivateNottificationBubble();
-					//inserting history if exists
-					jQuery(chatApp.private_messages).each(function(index,message){
-						if(message.room == room_name){
-							jQuery(".private_window .empty").remove();
-							chatApp.renderTemplate({
-								template:"#chatline",
-								data:{
-									user:message.from,
-									message:message.text,
-									time:message.time,
-									avatar:message.avatar
-								},
-								onRender:function(content){
-									content = jQuery(content);
-									content.appendTo("#privatewindow[data-room='"+room_name+"'] .wrapper");
-									
-								}
-							});
-						}
-					});
+		//make the conversation item unread
+		
+		jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
+		
+		chatApp.renderTemplate({
+			template:"#private_conversation",
+			data:{
+				partner:partner,
+				room:room_name,
+				channel:channel,
+				partner_avatar_url:jQuery(".user[data-user='"+partner+"'] .avatar").attr("src")
+			},
+			onRender:function(private_window_layout){
+				
+				jQuery(private_window_layout).appendTo(".chatwindow");
+				chatApp.animate(jQuery("#privatewindow"),chatApp.config.private_window_animation_in)
+				chatApp.updatePrivateNottificationBubble();
+				//inserting history if exists
+				jQuery(chatApp.private_messages).each(function(index,message){
+					if(message.room == room_name){
+						jQuery(".private_window .empty").remove();
+						chatApp.renderTemplate({
+							template:"#chatline",
+							data:{
+								user:message.from,
+								message:message.text,
+								time:message.time,
+								avatar:message.avatar
+							},
+							onRender:function(content){
+								content = jQuery(content);
+								content.appendTo("#privatewindow[data-room='"+room_name+"'] .wrapper");
+								
+							}
+						});
+					}
+				});
 
-					jQuery(".private_window").find(".wrapper").css({
-						"max-height":chatApp.scrollerheight
-					})
+				jQuery(".private_window").find(".wrapper").css({
+					"max-height":chatApp.scrollerheight
+				})
 
-					var private_window_scroller = jQuery("#privatewindow .wrapper");
-					private_window_scroller.scrollTop(private_window_scroller[0].scrollHeight)
-				}
-			});
-		}
+				var private_window_scroller = jQuery("#privatewindow .wrapper");
+				private_window_scroller.scrollTop(private_window_scroller[0].scrollHeight)
+			}
+		});
 	},
 	getPrivateWindowName:function(username1,username2){
 		if(username1 && username2){
