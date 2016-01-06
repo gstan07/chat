@@ -18,7 +18,10 @@ var chatApp = {
 			"http://31.media.tumblr.com/avatar_b2e548e2cec8_128.png",
 			"http://thumbs.dreamstime.com/m/profile-icon-male-avatar-portrait-casual-person-silhouette-face-flat-design-vector-47075235.jpg"
 			][Math.floor(Math.random() * 3)],
-		admin_username:"Chat Admin"
+		admin_username:"Chat Admin",
+		use_animations:true,
+		private_window_animation_in:"bounceInRight",//animate.css
+		private_window_animation_out:"bounceOutRight",//animate.css
 	},
 	init:function(){
 		chatApp["private_messages"] = [];
@@ -281,7 +284,7 @@ var chatApp = {
 				onRender:function(private_window_layout){
 					
 					jQuery(private_window_layout).appendTo(".chatwindow");
-					chatApp.animate(jQuery("#privatewindow"),"animated bounceInRight")
+					chatApp.animate(jQuery("#privatewindow"),chatApp.config.private_window_animation_in)
 					chatApp.updatePrivateNottificationBubble();
 					//inserting history if exists
 					jQuery(chatApp.private_messages).each(function(index,message){
@@ -339,6 +342,7 @@ var chatApp = {
 
 	},
 	updateChatWindow:function(m){
+		//main chat
 		if(m.channel == chatApp.config.main_channel_name){
 			if(m.channel == chatApp.config.main_channel_name){
 				var chat_window = jQuery(".scroller[data-channel='"+m.channel+"']");
@@ -363,6 +367,7 @@ var chatApp = {
 				});
 			}
 		}else{
+			//private conversations
 			var room_name = m.room;
 			if(m.from == chatApp.userstate.username || //from the current user
 				m.channel == chatApp.userstate.username || //to the current user
@@ -450,13 +455,21 @@ var chatApp = {
 		}
 	},
 	animate:function(element,animation,callback){
-		element.addClass(animation);
-		$(element).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-			element.removeClass(animation);	
-			if(callback){
-				callback();
+		if(!element || !animation){
+			console.warn("missing element or animation")
+		}else{
+			var use_animations = false || chatApp.config.use_animations;
+			var callback = callback || function(){};
+			if(use_animations){
+				element.addClass("animated "+animation);
+				$(element).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+					element.removeClass(animation);	
+					callback();
+				});
+			}else{
+				callback();	
 			}
-		});
+		}
 	},
 	uiBindings:function(){
 		
@@ -610,7 +623,7 @@ var chatApp = {
 
 		//clicking a user
 		jQuery(document).on("click","[data-user]",function(){
-			chatApp.animate(jQuery(this),"animated fadeIn");
+			chatApp.animate(jQuery(this),"fadeIn");
 			var partner = jQuery(this).attr("data-user");
 			if(partner != chatApp.userstate.username){
 				//jQuery(".private_window").addClass("quiet");
@@ -629,7 +642,7 @@ var chatApp = {
 
 		//toggle private window
 		jQuery(document).on("click","#closeprivatewindow",function(e){
-			chatApp.animate(jQuery("#privatewindow"),"animated bounceOutRight",function(){
+			chatApp.animate(jQuery("#privatewindow"),chatApp.config.private_window_animation_out,function(){
 				jQuery("#privatewindow").remove();
 			});
 			
