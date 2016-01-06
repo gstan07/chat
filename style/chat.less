@@ -23,6 +23,19 @@ body{
 	background-color: @grey1;
 }
 #chatapp{
+
+/*//disable user selection*/
+-webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;     
+
+/*disable font size change on orientation change*/
+-webkit-text-size-adjust: none;
+-moz-text-size-adjust: none;
+-ms-text-size-adjust: none;
+text-size-adjust: none;
+
 	position: fixed;
 	height:100%;
 	width:100%;
