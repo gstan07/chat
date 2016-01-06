@@ -88,9 +88,14 @@
 
 								%>
 
-								<a class="user" data-user="<%= user.state.username %>">
+								<a class="user isself_<%=(username==user.state.username)%>" data-user="<%= user.state.username %>">
 						    <img class="avatar" src="<%=user.state.userimage%>"/>
-						    <%= user.state.username %>
+						    <span class="name"><%= user.state.username %></span>
+						    <%if(username==user.state.username){
+								%>
+									<span class="u">you</span>
+								<%
+							}%>
 						    
 						    	
 						    	
@@ -127,9 +132,14 @@
 	</script>
 	<script type="text/html" id="user_item_template">
 		
-		<a class="user" data-user="<%=user%>">
+		<a class="user self_<%=isself%>" data-user="<%=user%>">
 			<img class="avatar"/>
-			<%=user%>
+			<span class="name"><%=user%></span>
+			<%if(isself==true){
+				%>
+					<span class="u">you</span>
+				<%
+			}%>
 		</a>	
 		
 	</script>

@@ -86,7 +86,6 @@ var chatApp = {
     									//history received
     									console.log("private channel history received",m)
     									//rendering chat
-
 		    							chatApp.renderTemplate({
 								    		template:"#chatwindow",
 								    		data:{
@@ -219,10 +218,12 @@ var chatApp = {
 		//todo:notice main chat
 	},
 	handleUserJoin:function(presence){
-		
 		chatApp.renderTemplate({
 			template:"#user_item_template",
-			data:{user:presence.uuid},
+			data:{
+				user:presence.uuid,
+				isself:(presence.uuid==chatApp.userstate.username)
+			},
 			onRender:function(content){
 				//if the user is not in the list, add it
 				
@@ -623,12 +624,10 @@ var chatApp = {
 
 		//clicking a user
 		jQuery(document).on("click","[data-user]",function(){
-			chatApp.animate(jQuery(this),"fadeIn");
 			var partner = jQuery(this).attr("data-user");
 			if(partner != chatApp.userstate.username){
-				//jQuery(".private_window").addClass("quiet");
+				chatApp.animate(jQuery(this),"fadeIn");
 				chatApp.openPrivateWindow(partner,partner);
-			
 			}
 		});
 		//open private window from conversations list
