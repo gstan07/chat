@@ -7,7 +7,11 @@
 ~"only screen and (min-device-pixel-ratio: 1.5)",
 ~"only screen and (min-resolution: 144dpi)";
 
-@grey1:#ececec;
+@grey1:#ececec;/*//background*/
+@gray2:#666666; /*main text*/
+@gray3:#cccccc;/*super light*/
+@gray4:#999999;/*light*/
+
 @main_header:#0091EA;/*main header*/
 
 
@@ -47,7 +51,16 @@ text-size-adjust: none;
 		background-color: #fff;
 		z-index:100;
 		text-align: center;
-		padding-top:20%;
+		padding-top:10%;
+		img.loading{
+			width:50px;
+		}
+		.msg{
+			display: block;
+			color:@gray3;
+			margin-top:20px;
+			font-size: 14px;
+		}
 	}
 	.chatwindow{
 		.header,.footer{
@@ -145,14 +158,14 @@ text-size-adjust: none;
 						/*margin:5px;*/
 						margin-bottom:1px;
 						cursor: pointer;
-						color:#333;
+						color:@gray2;
 						&.active{
 							background-color:lighten(@private_header,40%);
 							color:@white1;
 						}
 						.avatar{
 							width:40px;
-							border:1px solid #ccc;
+							border:1px solid @gray3;
 							border-radius: 20px;
 							vertical-align: middle;
 							margin-right:5px;
@@ -199,7 +212,7 @@ text-size-adjust: none;
 									background-color:lighten(@private_header,40%);
 									color:@white1;
 								}
-								color:#333;
+								color:@gray2;
 								cursor: pointer;
 								position: relative;
 								height:50px;
@@ -223,7 +236,7 @@ text-size-adjust: none;
 
 								}
 								.lastmsg{
-									color:#999;
+									color:@gray4;
 									font-size:12px;
 									left:60px;
 									top:40px;
@@ -231,7 +244,7 @@ text-size-adjust: none;
 										display: inline;
 									}
 									.time{
-										color:#ccc;
+										color:@gray3;
 										padding-left:20px;
 									}
 								}
@@ -261,7 +274,7 @@ text-size-adjust: none;
 		.footer{
 			bottom:0;
 			height:50px;
-			background-color: #ccc;
+			background-color: @gray3;
 			width: 100%;
 			z-index:10000;
 			input{
@@ -296,7 +309,7 @@ text-size-adjust: none;
 				position: absolute;
 				left:10px;
 				width:40px;
-				border:1px solid #ccc;
+				border:1px solid @gray3;
 				border-radius:20px;
 			}
 			padding-left:60px;
@@ -312,7 +325,7 @@ text-size-adjust: none;
 				padding-right:10px;
 			}
 			.time{
-				color:#ccc;
+				color:@gray3;
 				display: block;
 				padding-top: 5px;
 				/*font-style: italic;*/
@@ -391,7 +404,7 @@ text-size-adjust: none;
     	}
 	}
 	.empty{
-		color:#ccc;
+		color:@gray3;
 		padding:100px;
 		text-align: center;
 		font-style: italic;

@@ -181,11 +181,15 @@ var chatApp = {
 
 	},
 	spinner:{
-		show:function(){
-			jQuery("#chatapp .spinner").show();
+		spinner_obj:jQuery("#chatapp .spinner"),
+		show:function(msg){
+			if(msg){
+				chatApp.spinner.spinner_obj.find(".msg").html(msg);
+			}
+			chatApp.spinner.spinner_obj.show();
 		},
 		hide:function(){
-			jQuery("#chatapp .spinner").hide();
+			chatApp.spinner.spinner_obj.hide();
 		}
 	},
 	subscribeToChannel:function(subscription){
@@ -516,7 +520,7 @@ var chatApp = {
 				is_typing:false
 			};
 			chatApp["username"] = jQuery(this).attr("data-guestname");
-			chatApp.spinner.show();
+			chatApp.spinner.show("Entering as <strong>"+chatApp["username"]+"</strong>");
 			chatApp.startChat(chatApp.userstate.username);
 		});
 		//try to prevent reload
