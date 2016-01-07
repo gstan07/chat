@@ -642,7 +642,7 @@ var chatApp = {
 		jQuery(document).on("click",".conversation[data-room]",function(){
 			var partner = jQuery(this).attr("data-partner");
 			var channel = jQuery(this).attr("data-channel");
-
+			chatApp.animate(jQuery(this),"fadeIn");
 			chatApp.openPrivateWindow(partner,channel);
 			
 		});
