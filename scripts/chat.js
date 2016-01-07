@@ -20,13 +20,14 @@ var chatApp = {
 			][Math.floor(Math.random() * 3)],
 		admin_username:"Chat Admin",
 		use_animations:true,
-		private_window_animation_in:"bounceInRight",//animate.css
-		private_window_animation_out:"bounceOutRight",//animate.css
+		private_window_animation_in:"slideInRight",//animate.css
+		private_window_animation_out:"slideOutRight",//animate.css
 		lastmessage_length_to_show:30
 	},
 	init:function(){
 		chatApp["private_messages"] = [];
 		chatApp["scrollerheight"] = jQuery(window).height()-100;
+		chatApp["system"] = chatApp.getSystem();
 		chatApp.uiBindings();
 		Parse.initialize(
 			chatApp.config.parse.application_id,
@@ -479,6 +480,15 @@ var chatApp = {
 				callback();	
 			}
 		}
+	},
+	getSystem:function(){
+		//will return host system capabilities like isMobile, allowsAnimations etc
+		var to_return = {};
+
+
+
+
+		return to_return;
 	},
 	uiBindings:function(){
 		
