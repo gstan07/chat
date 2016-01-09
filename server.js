@@ -5,4 +5,6 @@ var io = require('socket.io').listen(server);
 
 
 app.use('/', express.static(__dirname + '/public'));
-app.listen(3000, function() { console.log('listening')});
+var port = process.env.PORT || 3000;
+
+app.listen(port, function() { console.log('listening')});
