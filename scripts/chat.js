@@ -21,7 +21,7 @@ var chatApp = {
 		admin_username:"Chat Admin",
 		use_animations:true,
 		private_window_animation_in:"slideInRight",//animate.css
-		private_window_animation_out:"slideOutRight",//animate.css
+		private_window_animation_out:"slideOutLeft",//animate.css
 		lastmessage_length_to_show:30
 	},
 	init:function(){
