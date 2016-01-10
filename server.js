@@ -17,7 +17,7 @@ nsp.on('connection', function(socket){
 	// io.emit("hi",socket);
 	socket.on("subscribe",function(data,callback){
 		//joining room
-		// console.log("subscribing");
+		console.log("subscribing");
 		socket.join(data.channel,function(){
 			callback("Success, user connected to channel:"+data.channel)
 			// console.log("user is now connected to:",socket.rooms)	
@@ -49,21 +49,27 @@ nsp.on('connection', function(socket){
 		})
  	});
  	socket.on("user_list",function(data,callback){
- 		var room = data.room;
- 		var users = [];
- 		if(room){
- 			for(var id in nsp.connected){
-	 			if(nsp.connected[id].rooms[room]){
-	 				users.push(nsp.connected[id].state)	
-	 			}
- 			}
- 			callback(users);	
- 		}else{
- 			callback("missing data.room param");	
+ 		try{
+	 		var room = data.channel;
+	 		var users = [];
+	 		
+			for(var id in nsp.connected){
+				if(nsp.connected[id].rooms[room]){
+					users.push(nsp.connected[id].state)	
+				}
+			}
+			callback(users);	
+ 		}catch(err){
+ 			console.log("error getting user list",err);
  		}
  		
  	});
  	socket.on("message",function(data,callback){
- 		socket.emit("message",data);
+ 		//send the message to all sockets in the room, including sender
+ 		try{
+ 			nsp.in(data.channel).emit("message",data);
+	 	}catch(err){
+	 		console.log("error broadcasting message ",err);	
+	 	}
  	})
 });

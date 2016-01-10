@@ -43,9 +43,12 @@ var messaging = {
 			}catch(err){}
 		});
 	},
-	getUserList:function(data){
+	getUserList:function(data,callback){
 		this.socket.emit("user_list",data,function(response){
-			console.log(response)
+			try{
+				callback(response);
+			}catch(err){}
+			
 		});
 	},
 	handleReceivedMessage:function(callback){
