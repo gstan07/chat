@@ -1,11 +1,42 @@
 <html>
 	<head>
-		<script src="https://cdn.socket.io/socket.io-1.4.3.js"></script>
-		<script>
-  			var socket = io();
-		</script>
+		<script src="/socket.io/socket.io.js"></script>
+	<script src="scripts/messaging.js"></script>
+	<script>
+			messaging["config"] = {
+				app_key:"plmplmplm"
+			}
+			messaging["user_state"] = {
+				name:"guest_"+Math.floor(Math.random()*90000) + 10000,
+				avatar:"https://cdn0.iconfinder.com/data/icons/user-pictures/100/matureman1-128.png"
+			}
+			messaging.init(function(){
+
+				messaging.subscribeToChannel({
+					channel:"main",
+					broadcast_presence:true,
+					onSubscribe:function(response){
+
+						messaging.subscribeToChannel({
+							channel:messaging.user_state.name,
+							// onSubscribe:function(response){
+							// 	console.log(response);
+							// }
+						});
+					}
+				});
+
+				
+
+
+			});
+			messaging.handlePresence(function(presence){
+				console.log(presence);
+			});
+	</script>
 	</head>
 	<body>
 		hello
 	</body>
+
 </html>
