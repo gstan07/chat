@@ -11,16 +11,16 @@ server.listen(port, function() { console.log('listening on port '+port)});
 var nsp = io.of("/plmplmplm");//todo:get this from the client
 nsp.on('connection', function(socket){
 
-	console.log("user connected");
+	// console.log("user connected");
 
 	// console.log(nsp.connected);
 	// io.emit("hi",socket);
 	socket.on("subscribe",function(data,callback){
 		//joining room
-		console.log("subscribing");
+		// console.log("subscribing");
 		socket.join(data.channel,function(){
 			callback("Success, user connected to channel:"+data.channel)
-			console.log("user is now connected to:",socket.rooms)	
+			// console.log("user is now connected to:",socket.rooms)	
 		});
 
 		//broadcast join event to all the users but current
@@ -35,16 +35,13 @@ nsp.on('connection', function(socket){
 		
 		
 	});
-	socket.on("message",function(data){
-		console.log(data);
-	});
 	socket.on("initial_state",function(data){
 		socket["state"] = data;
-		console.log("initial state set. Client name is "+socket.state["name"]);
+		// console.log("initial state set. Client name is "+socket.state["name"]);
 	});
  	socket.on("disconnect",function(){
  		
- 		console.log("disconnected",socket.id);
+ 		// console.log("disconnected",socket.id);
  		nsp.emit("presence",{
 			action:"leave",
 			user:socket.state,
@@ -66,4 +63,7 @@ nsp.on('connection', function(socket){
  		}
  		
  	});
+ 	socket.on("message",function(data,callback){
+ 		socket.emit("message",data);
+ 	})
 });

@@ -36,15 +36,21 @@ var messaging = {
 			subscription.onSubscribe(response);	
 		});
 	},
-	sendMessage:function(channel_name,message){
-		this.socket.emit("message",{
-			channel_name:channel_name,
-			message:message
+	sendMessage:function(messageObj,callback){
+		this.socket.emit("message",messageObj,function(response){
+			try{
+				callback(response)
+			}catch(err){}
 		});
 	},
 	getUserList:function(data){
 		this.socket.emit("user_list",data,function(response){
 			console.log(response)
 		});
+	},
+	handleReceivedMessage:function(callback){
+		messaging.socket.on("message",function(message){
+			callback(message);
+		})
 	}
 }

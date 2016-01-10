@@ -33,6 +33,9 @@
 			messaging.handlePresence(function(presence){
 				console.log(presence);
 			});
+			messaging.handleReceivedMessage(function(message){
+				console.log(message);
+			});
 	</script>
 	</head>
 	<body>
