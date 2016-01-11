@@ -6,7 +6,9 @@ var messaging = {
 		
 	},
 	openSocket:function(onConnect){
+		
 		this["socket"] = io("/"+messaging.config.app_key);
+		
 		this["socket"].on('connect', function(){
 			
 
