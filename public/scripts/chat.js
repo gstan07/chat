@@ -13,10 +13,19 @@ var chatApp = {
 		warn_on_reload:false,
 		admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
 		guest_image:[
-			"https://cdn0.iconfinder.com/data/icons/user-pictures/100/matureman1-128.png",
-			"http://31.media.tumblr.com/avatar_b2e548e2cec8_128.png",
-			"http://thumbs.dreamstime.com/m/profile-icon-male-avatar-portrait-casual-person-silhouette-face-flat-design-vector-47075235.jpg"
-			][Math.floor(Math.random() * 3)],
+			"images/avatars/a1.png",
+			"images/avatars/a2.png",
+			"images/avatars/a3.png",
+			"images/avatars/a4.png",
+			"images/avatars/a5.png",
+			"images/avatars/a6.png",
+			"images/avatars/a7.png",
+			"images/avatars/a8.png",
+			"images/avatars/a9.png",
+			"images/avatars/a10.png",
+			"images/avatars/a11.png",
+			"images/avatars/a12.png"
+			][Math.floor(Math.random() * 12)],
 		admin_username:"Chat Admin",
 		use_animations:true,
 		private_window_animation_in:"slideInRight",//animate.css
