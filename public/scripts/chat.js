@@ -563,6 +563,7 @@ var chatApp = {
 						channel:channel,
 						avatar:chatApp.userstate.avatar
 				});
+				button.css({"visibility":"hidden"})
 				input.val("");
 			}
 
@@ -583,7 +584,7 @@ var chatApp = {
 						channel:channel,
 						avatar:chatApp.userstate.avatar
 				});
-				
+				button.css({"visibility":"hidden"})
 				input.val("");
 				//input.focus();
 			}
