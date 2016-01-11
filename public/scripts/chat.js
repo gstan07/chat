@@ -574,34 +574,16 @@ var chatApp = {
 			if(input.val()!=""){
 				var channel = input.attr("data-channel");
 				var room = input.closest("[data-room]").attr("data-room");
-				input.attr({
-					"disabled":"disabled",
-					"placeholder":"wait..."
-				});
-				button.html("wait...");
-				button.attr("disabled","disabled");
+				
 				chatApp.say({
-					message:{
-						from:chatApp.userstate.username,
+						from:chatApp.userstate.name,
 						room:room,
 						type:"text",
 						text:input.val(),
 						channel:channel,
-						avatar:chatApp.userstate.userimage
-					},
-					channel:channel,
-					callback:function(){
-						input.removeAttr("disabled");
-						input.attr({"placeholder":"say something"});
-						input.focus();
-						button.removeAttr("disabled");
-						button.html("Say it");
-						button.css({"visibility":"hidden"});
-					}
+						avatar:chatApp.userstate.avatar
 				});
-				jQuery(this).css({
-					"visibility":"hidden"
-				});	
+				
 				input.val("");
 				//input.focus();
 			}
