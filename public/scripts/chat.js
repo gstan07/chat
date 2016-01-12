@@ -69,7 +69,7 @@ var chatApp = {
 			app_key:chatApp.config.messaging.app_key
 		}
 		chatApp.chat_service["user_state"] = chatApp.userstate;
-		chatApp.chat_service.init();
+		chatApp.chat_service.init(chatApp.config.messaging.app_key);
 		chatApp.chat_service.handleEvent('reconnecting', function (response) {
 		    
 	  		chatApp.spinner.show("attempting to reconnect...");
@@ -535,6 +535,8 @@ var chatApp = {
 			chatApp["userstate"] = {
 				name:jQuery(this).attr("data-guestname"),
 				avatar:chatApp.config.guest_image,
+				idle:false,
+				isTyping : false
 				
 			};
 			chatApp["username"] = jQuery(this).attr("data-guestname");

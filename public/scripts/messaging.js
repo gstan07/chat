@@ -1,17 +1,16 @@
 //this will wrap over socket io
 var messaging = {
-	init:function(onConnect){
-			messaging.openSocket(onConnect);	
+	init:function(app_key){
+			messaging.openSocket(app_key);	
 		
 		
 	},
-	openSocket:function(onConnect){
+	openSocket:function(app_key){
 		
-		this["socket"] = io("/"+messaging.config.app_key,{
+		this["socket"] = io("/"+app_key,{
 			 'reconnection': true
 		});
-		messaging.user_state["idle"] = false;
-		messaging.user_state["isTyping"] = false;
+		
 		
 		this["socket"].on('connect', function(){
 			
@@ -25,9 +24,7 @@ var messaging = {
 		 
 
 
-		try{
-			onConnect();
-		}catch(err){}
+		
 	},
 	subscribeToChannel:function(subscription){
 		subscription = {
