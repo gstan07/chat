@@ -22,31 +22,12 @@ var messaging = {
 		});
 
 
-		  this["socket"].on('reconnect', function (a, b) {
-		    messaging.subscribeToChannel({
-		    	channel:"mainchat",
-		    	broadcast_presence:true,
-		    	onSubscribe:function(){
-		    		messaging.subscribeToChannel({
-		    			channel:messaging.user_state.name
-		    		})
-		    	}
-		    });
-		  });
-		  // this["socket"].on('reconnecting', function (a, b) {
-		    
-
-		  // });
+		 
 
 
 		try{
 			onConnect();
 		}catch(err){}
-	},
-	handlePresence:function(callback){
-		messaging.socket.on("presence",function(presence){
-				callback(presence);
-		});
 	},
 	subscribeToChannel:function(subscription){
 		subscription = {
@@ -74,9 +55,9 @@ var messaging = {
 			
 		});
 	},
-	handleReceivedMessage:function(callback){
-		messaging.socket.on("message",function(message){
-			callback(message);
+	handleEvent:function(event,callback){
+		messaging.socket.on(event,function(response){
+			callback(response)
 		})
 	}
 }

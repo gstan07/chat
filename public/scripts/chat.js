@@ -70,6 +70,25 @@ var chatApp = {
 		}
 		chatApp.chat_service["user_state"] = chatApp.userstate;
 		chatApp.chat_service.init();
+		chatApp.chat_service.handleEvent('reconnecting', function (response) {
+		    
+	  		chatApp.spinner.show("attempting to reconnect...");
+	  	});
+	  	chatApp.chat_service.handleEvent('reconnect', function (response) {
+		    
+	  		chatApp.subscribeToChannel({
+		    	channel:chatApp.config.main_channel_name,
+		    	broadcast_presence:true,
+		    	onSubscribe:function(){
+		    		chatApp.subscribeToChannel({
+		    			channel:chatApp.userstate.name,
+		    			onSubscribe:function(){
+		    				chatApp.spinner.hide();
+		    			}
+		    		})
+		    	}
+		    });
+	  	});
     	chatApp.subscribeToChannel({
     		channel:chatApp.config.main_channel_name,
     		broadcast_presence:true,
@@ -86,10 +105,10 @@ var chatApp = {
     						channel:chatApp.config.main_channel_name
     					},function(users){
     						//user list received
-    						chatApp.chat_service.handlePresence(function(presence){
+    						chatApp.chat_service.handleEvent("presence",function(presence){
     							chatApp.listenToMainChannelPresence(presence);
     						});
-    						chatApp.chat_service.handleReceivedMessage(function(m){
+    						chatApp.chat_service.handleEvent("message",function(m){
     							chatApp.updateChatWindow(m);
     						});
     						chatApp.renderTemplate({
