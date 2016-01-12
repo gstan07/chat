@@ -1,7 +1,10 @@
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+var io = require('socket.io')(server,{
+	'pingInterval': 360000,
+	'pingTimeout': 360000
+});
 
 var port = process.env.PORT || 3000;
 
@@ -25,7 +28,7 @@ nsp.on('connection', function(socket){
 				socket.broadcast.emit('presence',{
 					action:"join",
 					user:socket.state,
-					occupancy:Object.keys(nsp.connected).length
+					// occupancy:Object.keys(nsp.connected).length
 				});
 			}
 		}catch(err){
@@ -45,12 +48,13 @@ nsp.on('connection', function(socket){
  			nsp.emit("presence",{
 				action:"leave",
 				user:socket.state,
-				occupancy:Object.keys(nsp.connected).length
+				// occupancy:Object.keys(nsp.connected).length
 			})
 		}catch(err){
 			console.log("error emitting leave event",err);
 		}
  	});
+
  	socket.on("user_list",function(data,callback){
  		try{
 	 		var room = data.channel;
@@ -68,6 +72,7 @@ nsp.on('connection', function(socket){
  		
  	});
  	socket.on("message",function(data,callback){
+ 		
  		//send the message to all sockets in the room, including sender
  		try{
  			nsp.in(data.channel).emit("message",data);

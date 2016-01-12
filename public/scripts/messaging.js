@@ -7,7 +7,11 @@ var messaging = {
 	},
 	openSocket:function(onConnect){
 		
-		this["socket"] = io("/"+messaging.config.app_key);
+		this["socket"] = io("/"+messaging.config.app_key,{
+			 'reconnection': true
+		});
+		messaging.user_state["idle"] = false;
+		messaging.user_state["isTyping"] = false;
 		
 		this["socket"].on('connect', function(){
 			
@@ -16,8 +20,25 @@ var messaging = {
 			messaging.socket.emit("initial_state",messaging.user_state);
 			//connect to the main chat room
 		});
-		messaging.user_state["idle"] = false;
-		messaging.user_state["isTyping"] = false;
+
+
+		  this["socket"].on('reconnect', function (a, b) {
+		    messaging.subscribeToChannel({
+		    	channel:"mainchat",
+		    	broadcast_presence:true,
+		    	onSubscribe:function(){
+		    		messaging.subscribeToChannel({
+		    			channel:messaging.user_state.name
+		    		})
+		    	}
+		    });
+		  });
+		  // this["socket"].on('reconnecting', function (a, b) {
+		    
+
+		  // });
+
+
 		try{
 			onConnect();
 		}catch(err){}

@@ -195,7 +195,7 @@ var chatApp = {
 	},
 	listenToMainChannelPresence:function(presence){
 		console.log(presence);
-		jQuery("#main_occupancy").html(presence.occupancy);
+		
 		switch(presence.action){
 			case "leave":
 			case "timeout":
@@ -210,6 +210,7 @@ var chatApp = {
 	handleUserleave:function(presence){
 		//remove user from list
 		jQuery("[data-tab=userslist] [data-user="+presence.user.name+"]").remove();
+		jQuery("#main_occupancy").html(jQuery("[data-tab=userslist] [data-user]").length);
 		//todo: if the user have opened privates, notice his partners
 		//todo:notice main chat
 	},
@@ -224,12 +225,13 @@ var chatApp = {
 			},
 			onRender:function(content){
 				//if the user is not in the list, add it
-				
+				//todo, move this condition obove rendertemplate
 				if(jQuery("[data-tab=userslist] [data-user="+presence.user.name+"]").length==0){
 					var users_list = jQuery(".appview[data-tab='userslist'] .scroller");
 					users_list.append(content);
+					jQuery("#main_occupancy").html(jQuery("[data-tab=userslist] [data-user]").length);
 				}
-
+				
 				
 				
 			}
