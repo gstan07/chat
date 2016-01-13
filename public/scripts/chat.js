@@ -76,10 +76,10 @@ var chatApp = {
 			//socket connected
 			messaging.setState(chatApp.userstate);
 			messaging.subscribeToChannel({
+				//subscribing to the main channel and own private channel
 	    		channel:[chatApp.config.main_channel_name,chatApp.userstate.name],
 	    		broadcast_presence:true,
 	    		onSubscribe:function(m){
-	    			console.log(m);
 	    			messaging.getUserList({
 						channel:chatApp.config.main_channel_name
 					},function(users){
@@ -125,9 +125,18 @@ var chatApp = {
 	    		}
     		});
 		});
+		messaging.handleEvent("disconnect",function(response){
+			chatApp.spinner.show({
+	  			style:"min",
+	  			msg:"disconnected"
+	  		});
+		})
 		messaging.handleEvent('reconnecting', function (response) {
 		    
-	  		chatApp.spinner.show("attempting to reconnect...");
+	  		chatApp.spinner.show({
+	  			style:"min",
+	  			msg:"attempting to reconnect..."
+	  		});
 	  	});
 	  	messaging.handleEvent('connect_error', function (response) {
 		    
@@ -137,6 +146,8 @@ var chatApp = {
 	  	messaging.handleEvent('reconnect', function (response) {
 		    messaging.setState(chatApp.userstate);
 	  		messaging.subscribeToChannel({
+	  			//subscribint to the main channel and own private channel
+	  			//todo subscribe to other channels if there are conversations...
 		    	channel:[chatApp.config.main_channel_name,chatApp.userstate.name],
 		    	broadcast_presence:true,
 		    	onSubscribe:function(){
@@ -209,14 +220,17 @@ var chatApp = {
 	},
 	spinner:{
 		spinner_obj:jQuery("#chatapp .spinner"),
-		show:function(msg){
-			if(msg){
-				chatApp.spinner.spinner_obj.find(".msg").html(msg);
+		show:function(data){
+			if(data.style){
+				this.spinner_obj.addClass(data.style)
+			}
+			if(data.msg){
+				chatApp.spinner.spinner_obj.find(".msg").html(data.msg);
 			}
 			chatApp.spinner.spinner_obj.show();
 		},
 		hide:function(){
-			chatApp.spinner.spinner_obj.hide();
+			chatApp.spinner.spinner_obj.attr("class","spinner").hide();
 		}
 	},
 	listenToMainChannelPresence:function(presence){
@@ -283,17 +297,14 @@ var chatApp = {
 
 		var room_name = chatApp.getPrivateWindowName(partner,chatApp.userstate.name);
 		messaging.subscribeToChannel({
+			//subscribing to partner channel
+			//do not broadcast presence
 			channel:[partner],
 			onSubscribe:function(){
 				console.log(chatApp.userstate.name+" subscribed to private channel of "+ partner);
 			}
 		});
 		
-
-
-		
-			
-			
 		//make the conversation item unread
 		
 		jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
@@ -547,7 +558,9 @@ var chatApp = {
 				isGuest:true
 			};
 			chatApp["username"] = jQuery(this).attr("data-guestname");
-			chatApp.spinner.show("Entering as <strong>"+chatApp["username"]+"</strong>");
+			chatApp.spinner.show({
+				msg:"Entering as <strong>"+chatApp["username"]+"</strong>"
+			});
 			chatApp.startChat(chatApp.userstate.name);
 		});
 		//try to prevent reload
