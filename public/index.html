@@ -70,7 +70,6 @@
 					<span class="counter" data-count="0">0</span></a>
 				<a class="tab" data-tab="settings" href="#">
 					<img class="icon avatar" src="<%=userimage%>"/>
-				<!--<%=username%>-->
 				</a>
 			</div>
 			<div class="content">
@@ -85,7 +84,33 @@
 				</div>
 				<div class="appview" data-tab="userslist">
 					<div class="scroller">
-						<% _.each(users, function(user) { %> 
+						
+					</div>
+				</div>
+				<div class="appview" data-tab="conversations">
+					<div class="wrapper">
+						<div class="scroller conversations_container">
+						<div class="empty">you have no private conversations</div>
+
+
+
+
+
+						</div>
+						
+					</div>
+				</div>
+				<div class="appview" data-tab="settings">
+					<div class="scroller"><%=username%></div>
+				</div>
+
+			</div>
+			
+		</div>
+	</script>
+	<script type="text/html" id="user_item_template">
+		
+		<% _.each(users, function(user) { %> 
 							
 
 								<a class="user isself_<%=(username==user.name)%>" data-user="<%= user.name %>">
@@ -105,40 +130,6 @@
 								
 						    
 						<% }); %>
-					</div>
-				</div>
-				<div class="appview" data-tab="conversations">
-					<div class="wrapper">
-						<div class="scroller conversations_container">
-						<div class="empty">you have no private conversations</div>
-
-
-
-
-
-						</div>
-						
-					</div>
-				</div>
-				<div class="appview" data-tab="settings">
-					<div class="scroller">settings</div>
-				</div>
-
-			</div>
-			
-		</div>
-	</script>
-	<script type="text/html" id="user_item_template">
-		
-		<a class="user isself_<%=isself%>" data-user="<%=user%>">
-			<img class="avatar" src="<%=avatar%>"/>
-			<span class="name"><%=user%></span>
-			<%if(isself==true){
-				%>
-					<span class="u">you</span>
-				<%
-			}%>
-		</a>	
 		
 	</script>
 	<script type="text/html" id="chatline">

@@ -7,7 +7,7 @@ var messaging = {
 	},
 	openSocket:function(opts){
 		
-		this["socket"] = io("/"+opts.app_key,{
+		this["socket"] = io.connect("/"+opts.app_key,{
 			 'reconnection': true
 		});
 		

@@ -13,19 +13,19 @@ var chatApp = {
 		warn_on_reload:false,
 		admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
 		guest_image:[
-			"images/avatars/a1.png",
-			"images/avatars/a2.png",
-			"images/avatars/a3.png",
-			"images/avatars/a4.png",
-			"images/avatars/a5.png",
-			"images/avatars/a6.png",
-			"images/avatars/a7.png",
-			"images/avatars/a8.png",
-			"images/avatars/a9.png",
-			"images/avatars/a10.png",
-			"images/avatars/a11.png",
-			"images/avatars/a12.png"
-			][Math.floor(Math.random() * 12)],
+			"images/avatars/generic.jpeg"
+			// "images/avatars/a2.png",
+			// "images/avatars/a3.png",
+			// "images/avatars/a4.png",
+			// "images/avatars/a5.png",
+			// "images/avatars/a6.png",
+			// "images/avatars/a7.png",
+			// "images/avatars/a8.png",
+			// "images/avatars/a9.png",
+			// "images/avatars/a10.png",
+			// "images/avatars/a11.png",
+			// "images/avatars/a12.png"
+			][Math.floor(Math.random() * 1)],
 		admin_username:"Chat Admin",
 		use_animations:true,
 		private_window_animation_in:"slideInRight",//animate.css
@@ -52,7 +52,11 @@ var chatApp = {
 					chatApp.spinner.hide();
 					jQuery("#username").focus();
 					if(chatApp.config.allow_guest_user){
-						var guestname = "guest_"+Math.floor(Math.random()*100000);
+						var colors = ["red","green","blue","white","brown","violet","pink","gray"];
+						var animals = ["dog", "cat", "monkey", "donkey", "dino", "elephant"];
+						var rand_color = colors[Math.floor(Math.random() * colors.length)]
+						var rand_animal = animals[Math.floor(Math.random() * animals.length)]
+						var guestname = rand_color+""+rand_animal+""+Math.floor(Math.random()*1000);
 						jQuery("#signinasguest").attr("data-guestname",guestname);
 						jQuery("#signinasguest strong").html(guestname);
 					}else{
@@ -96,7 +100,6 @@ var chatApp = {
 	    						chatApp.renderTemplate({
 									    		template:"#chatwindow",
 									    		data:{
-									    			users:users,
 									    			mainchannelname:chatApp.config.main_channel_name,
 									    			occupancy:users.length,
 									    			username:chatApp.userstate.name,
@@ -104,11 +107,12 @@ var chatApp = {
 									    		},
 									    		onRender:function(content){
 									    			//rendering chat
+									    			
 									    			jQuery("#chat_container").html(content);
 									    			jQuery("#mainchatscroller").css({
 									    				"max-height":chatApp.scrollerheight
 									    			});
-									    			chatApp.updateChatWindow({
+									    												    			chatApp.updateChatWindow({
 									    				
 															from:chatApp.config.admin_username,
 															type:"text",
@@ -118,6 +122,8 @@ var chatApp = {
 															avatar:chatApp.config.admin_image
 														
 									    			})
+									    			chatApp.updateUsersList(users);
+
 									    			chatApp.spinner.hide();
 									    			
 									    		}
@@ -133,6 +139,11 @@ var chatApp = {
 		    
 	  		chatApp.spinner.show("attempting to reconnect...");
 	  	});
+	  	messaging.handleEvent('connect_error', function (response) {
+		    
+	  		console.log("connect error");
+	  	});
+
 	  	messaging.handleEvent('reconnect', function (response) {
 		    
 	  		messaging.subscribeToChannel({
@@ -142,13 +153,30 @@ var chatApp = {
 		    		messaging.subscribeToChannel({
 		    			channel:chatApp.userstate.name,
 		    			onSubscribe:function(){
-		    				chatApp.spinner.hide();
+		    				messaging.getUserList(function(users){
+		    					chatApp.updateUsersList(users);
+		    					chatApp.spinner.hide();
+		    				})
+		    				
 		    			}
 		    		})
 		    	}
 		    });
 	  	});
     	
+	},
+	updateUsersList:function(users){
+		chatApp.renderTemplate({
+			template:"#user_item_template",
+			data:{
+				users:users,
+				username:chatApp.username
+			},
+			onRender:function(content){
+				console.log(content);
+				jQuery("div[data-tab='userslist'] .scroller").html(content);
+			}
+		});
 	},
 	renderTemplate:function(view){
 		var view = {
@@ -231,9 +259,9 @@ var chatApp = {
 		chatApp.renderTemplate({
 			template:"#user_item_template",
 			data:{
-				user:presence.user.name,
-				isself:(presence.user.name==chatApp.userstate.username),
-				avatar:presence.user.avatar
+				users:[presence.user],
+				username:chatApp.username
+				
 			},
 			onRender:function(content){
 				//if the user is not in the list, add it
@@ -618,10 +646,11 @@ var chatApp = {
 		//clicking a user
 		jQuery(document).on("click","[data-user]",function(){
 			var partner = jQuery(this).attr("data-user");
-
+			chatApp.animate(jQuery(this),"fadeIn");
 			if(partner != chatApp.username){
-				chatApp.animate(jQuery(this),"fadeIn");
 				chatApp.openPrivateWindow(partner,partner);
+			}else{
+				jQuery("a[data-tab='settings']").click();
 			}
 		});
 		//open private window from conversations list
