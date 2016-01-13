@@ -251,11 +251,15 @@ var chatApp = {
 		//remove user from list
 		jQuery("[data-tab=userslist] [data-user="+presence.user.name+"]").remove();
 		jQuery("#main_occupancy").html(jQuery("[data-tab=userslist] [data-user]").length);
-		//todo: if the user have opened privates, notice his partners
+		//update conversation list for current user if a partner left
+		jQuery(".conversation[data-partner='"+presence.user.name+"']").addClass("offline")
+		//todo update current private window if opened
 		//todo:notice main chat
 	},
 	handleUserJoin:function(presence){
-
+		//partner back in?
+		jQuery(".conversation[data-partner='"+presence.user.name+"']").removeClass("offline")
+		//add user to user list
 		chatApp.renderTemplate({
 			template:"#user_item_template",
 			data:{

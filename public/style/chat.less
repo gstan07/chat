@@ -154,6 +154,7 @@ text-size-adjust: none;
 				}
 				&[data-tab="userslist"]{
 					.user{
+						position: relative;
 						-webkit-box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 -moz-box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
@@ -241,7 +242,8 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 									top:20px;
 
 								}
-								.lastmsg{
+								.lastmsg,{
+									position: absolute;
 									color:@gray4;
 									font-size:12px;
 									left:60px;
@@ -261,6 +263,9 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 											font-weight: bold;
 										}
 									}
+
+								}
+								&.hasleft{
 
 								}
 							}
@@ -478,5 +483,20 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 					background-color: magenta;
 				}
 			}
+	}
+	.status{
+		position: absolute;
+		right:20px;
+		top:45%;
+		width:8px;
+		height: 8px;
+		border-radius: 4px;
+		background-color: green;
+	}
+	.offline .status{
+		background-color: @gray3;
+	}
+	.iddle .status{
+		background-color: orange;
 	}
 }
