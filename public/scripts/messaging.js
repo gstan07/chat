@@ -6,24 +6,9 @@ var messaging = {
 		
 	},
 	openSocket:function(opts){
-		
 		this["socket"] = io.connect("/"+opts.app_key,{
 			 'reconnection': true
 		});
-		
-		
-		this["socket"].on('connect', function(){
-			//set the initial state
-			if(opts.state){
-				messaging.setState(opts.state);
-			}
-		});
-
-
-		 
-
-
-		
 	},
 	subscribeToChannel:function(subscription){
 		subscription = {

@@ -70,11 +70,11 @@ var chatApp = {
 
 
 		messaging.init({
-			app_key:chatApp.config.messaging.app_key,
-			state:chatApp.userstate
+			app_key:chatApp.config.messaging.app_key
 		});
 		messaging.handleEvent("connect",function(r){
 			//socket connected
+			messaging.setState(chatApp.userstate);
 			messaging.subscribeToChannel({
 	    		channel:chatApp.config.main_channel_name,
 	    		broadcast_presence:true,
@@ -173,7 +173,6 @@ var chatApp = {
 				username:chatApp.username
 			},
 			onRender:function(content){
-				console.log(content);
 				jQuery("div[data-tab='userslist'] .scroller").html(content);
 			}
 		});
@@ -557,8 +556,8 @@ var chatApp = {
 				name:jQuery(this).attr("data-guestname"),
 				avatar:chatApp.config.guest_image,
 				idle:false,
-				isTyping : false
-				
+				isTyping : false,
+				isGuest:true
 			};
 			chatApp["username"] = jQuery(this).attr("data-guestname");
 			chatApp.spinner.show("Entering as <strong>"+chatApp["username"]+"</strong>");
