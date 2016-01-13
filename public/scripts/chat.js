@@ -145,7 +145,7 @@ var chatApp = {
 	  	});
 
 	  	messaging.handleEvent('reconnect', function (response) {
-		    
+		    messaging.setState(chatApp.userstate);
 	  		messaging.subscribeToChannel({
 		    	channel:chatApp.config.main_channel_name,
 		    	broadcast_presence:true,
@@ -153,7 +153,9 @@ var chatApp = {
 		    		messaging.subscribeToChannel({
 		    			channel:chatApp.userstate.name,
 		    			onSubscribe:function(){
-		    				messaging.getUserList(function(users){
+		    				messaging.getUserList({
+		    					channel:chatApp.main_channel_name
+		    				},function(users){
 		    					chatApp.updateUsersList(users);
 		    					chatApp.spinner.hide();
 		    				})

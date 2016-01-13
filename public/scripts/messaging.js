@@ -37,9 +37,15 @@ var messaging = {
 		});
 	},
 	handleEvent:function(event,callback){
-		messaging.socket.on(event,function(response){
-			callback(response)
-		})
+		if(event == "connect"){
+			messaging.socket.once(event,function(response){
+				callback(response)
+			})
+		}else{
+			messaging.socket.on(event,function(response){
+				callback(response)
+			})
+		}
 	},
 	setState:function(state){
 		messaging.socket.emit("state",state);
