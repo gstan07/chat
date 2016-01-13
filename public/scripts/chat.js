@@ -76,62 +76,52 @@ var chatApp = {
 			//socket connected
 			messaging.setState(chatApp.userstate);
 			messaging.subscribeToChannel({
-	    		channel:chatApp.config.main_channel_name,
+	    		channel:[chatApp.config.main_channel_name,chatApp.userstate.name],
 	    		broadcast_presence:true,
 	    		onSubscribe:function(m){
-	    			//user subscribed to main channel
-	    			
-	    			//subscribing user to his private channel
-	    			messaging.subscribeToChannel({
-	    				channel:chatApp.userstate.name,
-	    				onSubscribe:function(m){
-	    					//user subscribed to his private channel
-	    					//getting the users list on the main channel
-	    					messaging.getUserList({
-	    						channel:chatApp.config.main_channel_name
-	    					},function(users){
-	    						//user list received
-	    						messaging.handleEvent("presence",function(presence){
-	    							chatApp.listenToMainChannelPresence(presence);
-	    						});
-	    						messaging.handleEvent("message",function(m){
-	    							chatApp.updateChatWindow(m);
-	    						});
-	    						chatApp.renderTemplate({
-									    		template:"#chatwindow",
-									    		data:{
-									    			mainchannelname:chatApp.config.main_channel_name,
-									    			occupancy:users.length,
-									    			username:chatApp.userstate.name,
-									    			userimage:chatApp.userstate.avatar
-									    		},
-									    		onRender:function(content){
-									    			//rendering chat
-									    			
-									    			jQuery("#chat_container").html(content);
-									    			jQuery("#mainchatscroller").css({
-									    				"max-height":chatApp.scrollerheight
-									    			});
-									    												    			chatApp.updateChatWindow({
-									    				
-															from:chatApp.config.admin_username,
-															type:"text",
-															text:"Hello, "+chatApp.userstate.name+"! Welcome to the chat!",
-															channel:chatApp.config.main_channel_name,
-															time:new Date().getTime()/1000,
-															avatar:chatApp.config.admin_image
-														
-									    			})
-									    			chatApp.updateUsersList(users);
+	    			console.log(m);
+	    			messaging.getUserList({
+						channel:chatApp.config.main_channel_name
+					},function(users){
+						//user list received
+						messaging.handleEvent("presence",function(presence){
+							chatApp.listenToMainChannelPresence(presence);
+						});
+						messaging.handleEvent("message",function(m){
+							chatApp.updateChatWindow(m);
+						});
+						chatApp.renderTemplate({
+							    		template:"#chatwindow",
+							    		data:{
+							    			mainchannelname:chatApp.config.main_channel_name,
+							    			occupancy:users.length,
+							    			username:chatApp.userstate.name,
+							    			userimage:chatApp.userstate.avatar
+							    		},
+							    		onRender:function(content){
+							    			//rendering chat
+							    			
+							    			jQuery("#chat_container").html(content);
+							    			jQuery("#mainchatscroller").css({
+							    				"max-height":chatApp.scrollerheight
+							    			});
+							    												    			chatApp.updateChatWindow({
+							    				
+													from:chatApp.config.admin_username,
+													type:"text",
+													text:"Hello, "+chatApp.userstate.name+"! Welcome to the chat!",
+													channel:chatApp.config.main_channel_name,
+													time:new Date().getTime()/1000,
+													avatar:chatApp.config.admin_image
+												
+							    			})
+							    			chatApp.updateUsersList(users);
 
-									    			chatApp.spinner.hide();
-									    			
-									    		}
-									    	});
-	    					});
-	    										
-	    				}
-	    			});
+							    			chatApp.spinner.hide();
+							    			
+							    		}
+							    	});
+					});
 	    		}
     		});
 		});
@@ -147,21 +137,15 @@ var chatApp = {
 	  	messaging.handleEvent('reconnect', function (response) {
 		    messaging.setState(chatApp.userstate);
 	  		messaging.subscribeToChannel({
-		    	channel:chatApp.config.main_channel_name,
+		    	channel:[chatApp.config.main_channel_name,chatApp.userstate.name],
 		    	broadcast_presence:true,
 		    	onSubscribe:function(){
-		    		messaging.subscribeToChannel({
-		    			channel:chatApp.userstate.name,
-		    			onSubscribe:function(){
-		    				messaging.getUserList({
-		    					channel:chatApp.config.main_channel_name
-		    				},function(users){
-		    					chatApp.updateUsersList(users);
-		    					chatApp.spinner.hide();
-		    				})
-		    				
-		    			}
-		    		})
+		    		messaging.getUserList({
+    					channel:chatApp.config.main_channel_name
+    				},function(users){
+    					chatApp.updateUsersList(users);
+    					chatApp.spinner.hide();
+    				})
 		    	}
 		    });
 	  	});
@@ -299,7 +283,7 @@ var chatApp = {
 
 		var room_name = chatApp.getPrivateWindowName(partner,chatApp.userstate.name);
 		messaging.subscribeToChannel({
-			channel:partner,
+			channel:[partner],
 			onSubscribe:function(){
 				console.log(chatApp.userstate.name+" subscribed to private channel of "+ partner);
 			}

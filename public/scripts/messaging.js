@@ -12,7 +12,7 @@ var messaging = {
 	},
 	subscribeToChannel:function(subscription){
 		subscription = {
-			channel:subscription.channel,
+			channel:subscription.channel,//array of channels
 			broadcast_presence:subscription.broadcast_presence || false,
 			onSubscribe:subscription.onSubscribe || function(){}
 		}

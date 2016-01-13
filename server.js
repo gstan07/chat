@@ -18,11 +18,17 @@ nsp.on('connection', function(socket){
 	socket.on("subscribe",function(data,callback){
 		//joining room
 		try{
-			socket.join(data.channel,function(){
-				callback("Success, user connected to channel:"+data.channel)
-				// console.log("user is now connected to:",socket.rooms)	
-			});
-
+			var total_rooms = data.channel.length;
+			for(i = 0; i <= total_rooms; i++){
+				if(i<total_rooms){
+					socket.join(data.channel[i]);
+				}else{
+					socket.join(data.channel[i],function(){
+						callback("Success, user connected to channel:"+data.channel)
+					});	
+				}
+				
+			}
 			//broadcast join event to all the users but current
 			if(data.broadcast_presence){			
 				socket.broadcast.emit('presence',{
