@@ -154,7 +154,7 @@ var chatApp = {
 		    			channel:chatApp.userstate.name,
 		    			onSubscribe:function(){
 		    				messaging.getUserList({
-		    					channel:chatApp.main_channel_name
+		    					channel:chatApp.config.main_channel_name
 		    				},function(users){
 		    					chatApp.updateUsersList(users);
 		    					chatApp.spinner.hide();
@@ -176,6 +176,7 @@ var chatApp = {
 			},
 			onRender:function(content){
 				jQuery("div[data-tab='userslist'] .scroller").html(content);
+				jQuery("#main_occupancy").html(users.length);
 			}
 		});
 	},
