@@ -1,23 +1,22 @@
 //this will wrap over socket io
 var messaging = {
-	init:function(app_key){
-			messaging.openSocket(app_key);	
+	init:function(opts){
+			messaging.openSocket(opts);	
 		
 		
 	},
-	openSocket:function(app_key){
+	openSocket:function(opts){
 		
-		this["socket"] = io("/"+app_key,{
+		this["socket"] = io("/"+opts.app_key,{
 			 'reconnection': true
 		});
 		
 		
 		this["socket"].on('connect', function(){
-			
-
 			//set the initial state
-			messaging.socket.emit("initial_state",messaging.user_state);
-			//connect to the main chat room
+			if(opts.state){
+				messaging.setState(opts.state);
+			}
 		});
 
 
@@ -56,5 +55,8 @@ var messaging = {
 		messaging.socket.on(event,function(response){
 			callback(response)
 		})
+	},
+	setState:function(state){
+		messaging.socket.emit("state",state);
 	}
 }

@@ -38,9 +38,8 @@ nsp.on('connection', function(socket){
 		
 		
 	});
-	socket.on("initial_state",function(data){
+	socket.on("state",function(data){
 		socket["state"] = data;
-		// console.log("initial state set. Client name is "+socket.state["name"]);
 	});
  	socket.on("disconnect",function(){
  		try{
