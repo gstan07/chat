@@ -113,7 +113,7 @@
 		<% _.each(users, function(user) { %> 
 							
 
-								<a class="user isself_<%=(username==user.name)%>" data-user="<%= user.name %>">
+								<a class="user isself_<%=(username==user.name)%>" data-status="online" data-user="<%= user.name %>">
 						    <img class="avatar" src="<%=user.avatar%>"/>
 						    <span class="name"><%= user.name %></span>
 						    <%if(username==user.name){
@@ -135,13 +135,13 @@
 	<script type="text/html" id="chatline">
 		<div data-chat-id="<%=user%><%=time%>" class="chatline animated fadeIn" data-author="<%=user%>">
 			<img src="<%=avatar%>" class="avatar"/>
-			<span class="user"><%=user%></span>
+			<span class="user" data-status="online"><%=user%></span>
 			<span class="message"><%=message%></span>
 			<span class="time" data-livestamp="<%=time%>">&nbsp;</span>
 		</div>
 	</script>
 	<script type="text/html" id="conversation_user">
-		<a class="conversation" data-room="<%=room%>" data-partner="<%=partner%>" data-channel="<%=channel%>" data-lastmsg="<%=lastmessagetime%>">
+		<a class="conversation" data-status="online" data-room="<%=room%>" data-partner="<%=partner%>" data-channel="<%=channel%>" data-lastmsg="<%=lastmessagetime%>">
 								<div class="avatar">
 									<img src="<%=avatar%>"/>
 								</div>
@@ -155,7 +155,7 @@
 							</a>
 	</script>
 	<script type="text/html" id="private_conversation">
-		<div id="privatewindow" class="private_window" data-partner="<%=partner%>" data-room="<%=room%>">
+		<div id="privatewindow" data-status="<%=status%>" class="private_window" data-partner="<%=partner%>" data-room="<%=room%>">
 			<div class="top_bar">
 			<a href="#" id="closeprivatewindow" class="back">
 			<img src="images/back.svg"/>
@@ -167,13 +167,18 @@
 			<span class="title">
 				<%=partner%> 
 			</span>
+			<br/>
+			<span class="userstatus">
+	
+				<%=status%>
+			</span>
 			</div>
 
 			<div class="chatlines">
 				<div class="wrapper">
 					<div class="empty">Start a private conversation with <%=partner%></div>
+
 				</div>
-				
 			</div>
 			<div class="footer">
 				<a class="sayitbutton button" href="#">Say it</a>

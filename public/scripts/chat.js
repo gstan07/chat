@@ -12,6 +12,7 @@ var chatApp = {
 		main_channel_name:"mainchat",
 		warn_on_reload:false,
 		admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
+
 		guest_image:[
 			"images/avatars/generic.jpeg"
 			// "images/avatars/a2.png",
@@ -26,7 +27,7 @@ var chatApp = {
 			// "images/avatars/a11.png",
 			// "images/avatars/a12.png"
 			][Math.floor(Math.random() * 1)],
-		admin_username:"Chat Admin",
+		admin_username:"System",
 		use_animations:true,
 		private_window_animation_in:"slideInRight",//animate.css
 		private_window_animation_out:"slideOutLeft",//animate.css
@@ -252,13 +253,27 @@ var chatApp = {
 		jQuery("[data-tab=userslist] [data-user="+presence.user.name+"]").remove();
 		jQuery("#main_occupancy").html(jQuery("[data-tab=userslist] [data-user]").length);
 		//update conversation list for current user if a partner left
-		jQuery(".conversation[data-partner='"+presence.user.name+"']").addClass("offline")
+		jQuery(".conversation[data-partner='"+presence.user.name+"']").attr("data-status","offline");
+		//update users lines on main chat
+		jQuery("#mainchatscroller .chatline[data-author='"+presence.user.name+"'] .user").attr("data-status","offline");
 		//todo update current private window if opened
+		var private_window = jQuery("#privatewindow[data-partner='"+presence.user.name+"']");
+		private_window.attr("data-status","offline");
+		private_window.find(".userstatus").html("offline");
 		//todo:notice main chat
 	},
 	handleUserJoin:function(presence){
 		//partner back in?
-		jQuery(".conversation[data-partner='"+presence.user.name+"']").removeClass("offline")
+		jQuery(".conversation[data-partner='"+presence.user.name+"']").attr("data-status","online");
+
+		//update users lines on main chat
+		jQuery("#mainchatscroller .chatline[data-author='"+presence.user.name+"'] .user").attr("data-status","online");
+
+		//update private window if opened:
+		var private_window = jQuery("#privatewindow[data-partner='"+presence.user.name+"']");
+		private_window.attr("data-status","online");
+		private_window.find(".userstatus").html("online");
+
 		//add user to user list
 		chatApp.renderTemplate({
 			template:"#user_item_template",
@@ -303,6 +318,7 @@ var chatApp = {
 		messaging.subscribeToChannel({
 			//subscribing to partner channel
 			//do not broadcast presence
+			//todo: do not subscribe if already subscribed
 			channel:[partner],
 			onSubscribe:function(){
 				console.log(chatApp.userstate.name+" subscribed to private channel of "+ partner);
@@ -313,19 +329,38 @@ var chatApp = {
 		
 		jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
 		
+		//getting partner avatar and status
+		if((user_item = jQuery(".user[data-user='"+partner+"']")).length != 0){
+			//from users list if user still online
+			var avatar_url = user_item.find(".avatar").attr("src");
+		}else if((user_item = jQuery(".conversation[data-partner='"+partner+"']")).length != 0){
+			//from conversation if there was a conversation and user went offline
+			var avatar_url = user_item.find(".avatar img").attr("src");
+		}else{
+			//private window was opened from the main chat
+			var user_item = jQuery("#mainchatscroller .chatline[data-author='"+partner+"']");
+			var avatar_url = user_item.find(".avatar").attr("src");
+		}
+		var user_status = user_item.attr("data-status");
+		
 		chatApp.renderTemplate({
 			template:"#private_conversation",
 			data:{
 				partner:partner,
 				room:room_name,
 				channel:channel,
-				partner_avatar_url:jQuery(".user[data-user='"+partner+"'] .avatar").attr("src")
+				partner_avatar_url:avatar_url,
+				status:user_status
 			},
 			onRender:function(private_window_layout){
 				
 				jQuery(private_window_layout).appendTo(".chatwindow");
 				chatApp.animate(jQuery("#privatewindow"),chatApp.config.private_window_animation_in)
 				chatApp.updatePrivateNottificationBubble();
+				
+				//partner status?
+
+
 				//inserting history if exists
 				jQuery(chatApp.private_messages).each(function(index,message){
 					if(message.room == room_name){
@@ -445,7 +480,7 @@ var chatApp = {
 					}
 					var conversation_item = jQuery(".conversation[data-room='"+message.room+"']");
 					if(conversation_item.length == 0){
-						var avatar = jQuery(".user[data-user='"+partner+"'] .avatar").attr("src");
+						var avatar = jQuery(".private_window[data-partner='"+partner+"'] .avatar img").attr("src");
 						chatApp.renderTemplate({
 							template:"#conversation_user",
 							data:{
@@ -464,8 +499,8 @@ var chatApp = {
 								if(private_window.length == 0){
 									
 									jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
-									
 								}
+								jQuery(".conversation[data-room='"+room_name+"']").attr("data-status",private_window.attr("data-status"))
 							}
 						});
 					}else{

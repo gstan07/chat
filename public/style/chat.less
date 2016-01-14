@@ -14,6 +14,7 @@
 
 @main_header:#0091EA;/*main header*/
 
+@green1:#4CAF50;
 
 //@private_header:#009688;
 @private_header:#4CAF50;
@@ -354,7 +355,6 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
     	height: 100%;
     	background-color: #fff;
     	.top_bar{
-    		background-color: @private_header;
     		color:@white1;
     		height:50px;
     		position: relative;
@@ -380,9 +380,7 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
     			height:50px;
     			width:100px;
     			text-align: left;
-    			&:active{
-    				background-color:darken(@private_header,5%)
-    			}
+    			
     			img{
     				position: absolute;
     				left:10px;
@@ -397,8 +395,32 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
     		}
     		.title{
     			position: relative;
-    			top:13px;
+    			top:10px;
+    			
     		}
+    		.userstatus{
+    				font-size:10px;
+    				position: relative;
+    				top:14px;
+    			}
+    	}
+    	&[data-status='online'] .top_bar{
+    		background-color: @private_header;
+    		.back:active{
+    				background-color:darken(@private_header,5%)
+    		}
+    	}
+    	&[data-status='offline'] .top_bar{
+    		background-color: @gray2;
+    		.back:active{
+    				background-color:darken(@gray2,5%)
+    		}
+    	}
+    	&[data-status='iddle'] .top_bar{
+    		background-color: orange;
+    		.back:active{
+    				background-color:darken(orange,5%)
+    		}	
     	}
     	.chatlines{
     		background-color:@grey1;
@@ -491,12 +513,14 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 		width:8px;
 		height: 8px;
 		border-radius: 4px;
-		background-color: green;
 	}
-	.offline .status{
+	[data-status='online'] .status{
+		background-color: @green1;
+	}
+	[data-status='offline'] .status{
 		background-color: @gray3;
 	}
-	.iddle .status{
+	[data-status='iddle'] .status{
 		background-color: orange;
 	}
 }
