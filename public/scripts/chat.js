@@ -474,13 +474,15 @@ var chatApp = {
 					if(message.from == chatApp.userstate.name){
 						var partner = message.channel;
 						var from = "you";
+						var avatar = jQuery(".private_window[data-partner='"+partner+"'] .avatar img").attr("src");
 					}else{
 						var partner = message.from;
 						var from = message.from;
+						var avatar = message.avatar;
 					}
 					var conversation_item = jQuery(".conversation[data-room='"+message.room+"']");
 					if(conversation_item.length == 0){
-						var avatar = jQuery(".private_window[data-partner='"+partner+"'] .avatar img").attr("src");
+						
 						chatApp.renderTemplate({
 							template:"#conversation_user",
 							data:{
