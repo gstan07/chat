@@ -650,6 +650,7 @@ var chatApp = {
 				// button.attr("disabled","disabled");
 				chatApp.say({
 						from:chatApp.username,
+						to:input.attr("data-partner"),
 						room:jQuery(this).closest("[data-room]").attr("data-room"),
 						type:"text",
 						text:input.val(),
@@ -671,6 +672,7 @@ var chatApp = {
 				
 				chatApp.say({
 						from:chatApp.userstate.name,
+						to:input.attr("data-partner"),
 						room:room,
 						type:"text",
 						text:input.val(),

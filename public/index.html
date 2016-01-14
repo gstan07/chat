@@ -78,7 +78,7 @@
 						<div class="scroller" id="mainchatscroller" data-channel="<%=mainchannelname%>" data-room="<%=mainchannelname%>"></div>
 						<div class="footer">
 							<a class="sayitbutton button" href="#">Say it</a>
-							<input data-channel="<%=mainchannelname%>" type="text" id="postonmainchat" placeholder="say something"/>
+							<input data-channel="<%=mainchannelname%>" type="text" data-partner="<%=mainchannelname%>" id="postonmainchat" placeholder="say something"/>
 						</div>
 					</div>
 				</div>
@@ -169,7 +169,7 @@
 			</span>
 			<br/>
 			<span class="userstatus">
-	
+
 				<%=status%>
 			</span>
 			</div>
@@ -182,7 +182,7 @@
 			</div>
 			<div class="footer">
 				<a class="sayitbutton button" href="#">Say it</a>
-				<input data-channel="<%=channel%>" placeholder="say something">
+				<input data-channel="<%=channel%>" data-partner="<%=partner%>" placeholder="say something">
 			</div>
 		</div>
 	</script>
