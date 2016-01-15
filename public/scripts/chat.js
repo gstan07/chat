@@ -493,7 +493,8 @@ var chatApp = {
 								lastmessage:message.text.substr(0,chatApp.config.lastmessage_length_to_show),
 								lastmessagetime:message.time,
 								channel:message.channel,
-								avatar:avatar
+								avatar:avatar,
+								ownavatar:chatApp.userstate.avatar
 							},
 							onRender:function(content){
 								jQuery(".conversations_container .empty").remove();

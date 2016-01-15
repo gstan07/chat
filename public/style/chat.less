@@ -157,8 +157,8 @@ text-size-adjust: none;
 					.user{
 						position: relative;
 						-webkit-box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
--moz-box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
-box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
+						-moz-box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
+						box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 						/*width:100%;*/
 						display: block;
 						padding:10px;
@@ -214,6 +214,9 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 						.scroller{
 							bottom:0!important;
 							.conversation{
+								-webkit-box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
+								-moz-box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
+								box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 								margin:10px;
 								//width: 100%;
 								display: block;
@@ -230,6 +233,11 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 								padding:10px;
 								.avatar{
 									top:10px;
+									left:30px;
+									&.me{
+										left:10px;
+										opacity:0.5;
+									}
 									img{
 										width:40px;
 										height: 40px;
@@ -239,7 +247,7 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 
 								}
 								.user{
-									left:60px;
+									left:90px;
 									top:20px;
 
 								}
@@ -247,7 +255,7 @@ box-shadow: 0px 3px 3px -1px rgba(0,0,0,0.14);
 									position: absolute;
 									color:@gray4;
 									font-size:12px;
-									left:60px;
+									left:90px;
 									top:40px;
 									div{
 										display: inline;
