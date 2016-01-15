@@ -715,7 +715,7 @@ var chatApp = {
 		//clicking a user from chatline
 		jQuery(document).on("click","#mainchatscroller .chatline .user",function(e){
 			var partner = jQuery(this).closest(".chatline").attr("data-author");
-			if(partner != chatApp.userstate.username && partner != chatApp.config.admin_username){
+			if(partner != chatApp.userstate.name && partner != chatApp.config.admin_username){
 				chatApp.openPrivateWindow(partner,partner);
 			}
 		});
