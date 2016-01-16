@@ -316,15 +316,18 @@ var chatApp = {
 		jQuery(".private_window").remove();
 
 		var room_name = chatApp.getPrivateWindowName(partner,chatApp.userstate.name);
-		messaging.subscribeToChannel({
+		if(jQuery.inArray(partner,messaging.joined_channels) == -1){
 			//subscribing to partner channel
 			//do not broadcast presence
 			//todo: do not subscribe if already subscribed
-			channel:[partner],
-			onSubscribe:function(response){
-				console.log(response);
-			}
-		});
+			messaging.subscribeToChannel({
+				channel:[partner],
+				onSubscribe:function(response){
+					console.log(response);
+				}
+			});
+		}
+		
 		
 		//make the conversation item unread
 		
