@@ -81,6 +81,7 @@ var chatApp = {
 	    		channel:[chatApp.config.main_channel_name,chatApp.userstate.name],
 	    		broadcast_presence:true,
 	    		onSubscribe:function(m){
+	    			console.log(m)
 	    			messaging.getUserList({
 						channel:chatApp.config.main_channel_name
 					},function(users){
@@ -106,7 +107,7 @@ var chatApp = {
 							    			jQuery("#mainchatscroller").css({
 							    				"max-height":chatApp.scrollerheight
 							    			});
-							    												    			chatApp.updateChatWindow({
+							    			chatApp.updateChatWindow({
 							    				
 													from:chatApp.config.admin_username,
 													type:"text",
@@ -147,11 +148,11 @@ var chatApp = {
 	  	messaging.handleEvent('reconnect', function (response) {
 		    messaging.setState(chatApp.userstate);
 	  		messaging.subscribeToChannel({
-	  			//subscribint to the main channel and own private channel
-	  			//todo subscribe to other channels if there are conversations...
-		    	channel:[chatApp.config.main_channel_name,chatApp.userstate.name],
+	  			//reconnecting joined channels
+		    	channel:messaging.joined_channels,
 		    	broadcast_presence:true,
-		    	onSubscribe:function(){
+		    	onSubscribe:function(response){
+		    		console.log(response);
 		    		messaging.getUserList({
     					channel:chatApp.config.main_channel_name
     				},function(users){
@@ -320,8 +321,8 @@ var chatApp = {
 			//do not broadcast presence
 			//todo: do not subscribe if already subscribed
 			channel:[partner],
-			onSubscribe:function(){
-				console.log(chatApp.userstate.name+" subscribed to private channel of "+ partner);
+			onSubscribe:function(response){
+				console.log(response);
 			}
 		});
 		
@@ -445,8 +446,8 @@ var chatApp = {
 			//private conversations
 			var room_name = m.room;
 			if(m.from == chatApp.userstate.name || //from the current user
-				m.channel == chatApp.userstate.name || //to the current user
-				m.room == chatApp.getPrivateWindowName(m.from,chatApp.userstate.name)){//from partner in conversation with the current user
+				m.to == chatApp.userstate.name//to the current user
+				){//from partner in conversation with the current user
 				chatApp.private_messages.push(m);
 				//update private chat window if necesary
 				var private_window = jQuery(".private_window[data-room='"+m.room+"']");

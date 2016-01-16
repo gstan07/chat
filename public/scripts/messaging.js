@@ -17,7 +17,23 @@ var messaging = {
 			onSubscribe:subscription.onSubscribe || function(){}
 		}
 		messaging.socket.emit("subscribe",subscription,function(response){
-
+			//keep the list of subscribed channels in the current session
+			if(!messaging.joined_channels){
+				messaging["joined_channels"] = [];
+			}
+			for(i in subscription.channel){
+				var shouldPush = true;
+				for(j in messaging.joined_channels){
+					if(messaging.joined_channels[j] == subscription.channel[i]){
+						shouldPush = false;
+					}
+				}
+				if(shouldPush){
+					messaging.joined_channels.push(subscription.channel[i]);		
+				}
+			}
+			
+			//handle callback from the client
 			subscription.onSubscribe(response);	
 		});
 	},
