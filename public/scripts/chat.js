@@ -53,8 +53,8 @@ var chatApp = {
 					chatApp.spinner.hide();
 					jQuery("#username").focus();
 					if(chatApp.config.allow_guest_user){
-						var colors = ["red","green","blue","white","brown","violet","pink","gray"];
-						var animals = ["dog", "cat", "monkey", "donkey", "dino", "elephant"];
+						var colors = ["darker","black","dark","orange","red","green","blue","white","brown","violet","pink","gray","silver","golden","maroon"];
+						var animals = ["dog", "cat", "monkey", "donkey", "dino", "elephant","horse","camel","kangaroo","fish","gorilla","iguana","lizard","turkey","shark","ostrich","butterfly","zebra","owl","eagle","bear","panther","tiger","wolf","pigeon","jaguar","fox","lion"];
 						var rand_color = colors[Math.floor(Math.random() * colors.length)]
 						var rand_animal = animals[Math.floor(Math.random() * animals.length)]
 						var guestname = rand_color+""+rand_animal+""+Math.floor(Math.random()*1000);
