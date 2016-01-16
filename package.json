@@ -1,8 +1,8 @@
 {
     "name": "realtimechat",
     "description":"realtime chat based on socket.io",
-    "repository":"https://github.com/gstan07/chat,"
-    "version": "1",
+    "repository":"https://github.com/gstan07/chat",
+    "version": "0.0.1",
     "license": "MIT",
     "main": "server.js",
     "dependencies": {
