@@ -1,17 +1,17 @@
 {
-    name: "realtimechat",
-    description:"realtime chat based on socket.io",
-    repository:"https://github.com/gstan07/chat,"
-    version: "1",
-    license: "MIT",
-    main: "server.js",
-    dependencies: {
+    "name": "realtimechat",
+    "description":"realtime chat based on socket.io",
+    "repository":"https://github.com/gstan07/chat,"
+    "version": "1",
+    "license": "MIT",
+    "main": "server.js",
+    "dependencies": {
         "express": "^4.8.7",
         "body-parser":"^1.12.0",
         "socket.io": ">=1.4.3",
         "redis-connection": "^4.0.1"
     },
-    scripts:{
+    "scripts":{
     	"start": "node server.js"
     }
 }
