@@ -1,7 +1,8 @@
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
-var redis = require('redis-connection')();
+var redisobj = require('redis')
+var redis = redisobj.createClient(process.env.REDIS_URL);
 var io = require('socket.io')(server,{
 	// 'pingInterval': 360000,
 	// 'pingTimeout': 360000
