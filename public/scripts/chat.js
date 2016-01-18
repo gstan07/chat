@@ -280,7 +280,7 @@ var chatApp = {
 		
 
 		//add chatline to private window if private window on screen
-		var private_window = jQuery("#privatewindow");
+		var private_window = jQuery("#privatewindow[data-channel='"+message.channel+"']");
 		if(private_window.length != 0){
 			chatApp.renderTemplate({
 				template:"#chatline",
