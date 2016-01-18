@@ -65,5 +65,21 @@ var messaging = {
 	},
 	setState:function(state){
 		messaging.socket.emit("state",state);
+	},
+	invite:function(invitation,callback){
+		messaging.socket.emit("invitation",invitation,function(response){
+			try{
+				callback(response)
+			}catch(err){}
+		})
+	},
+	history:function(query,callback){
+		messaging.socket.emit("history",query,function(response){
+			try{
+				callback(response)
+			}catch(err){
+
+			}
+		});
 	}
 }

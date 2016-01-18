@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
+var redis = require('redis-connection')();
 var io = require('socket.io')(server,{
 	// 'pingInterval': 360000,
 	// 'pingTimeout': 360000
@@ -44,6 +45,16 @@ nsp.on('connection', function(socket){
 		
 		
 	});
+	socket.on("invitation",function(invitation,callback){
+		for(i in nsp.sockets){
+			var target_socket = nsp.sockets[i];
+			if(target_socket.state.name == invitation.partner){
+				nsp.sockets[target_socket.id].emit("invitation",invitation,function(){
+					callback("invitation sent to "+target_socket.state.name)
+				});
+			}
+		}
+	});
 	socket.on("state",function(data){
 		socket["state"] = data;
 	});
@@ -77,12 +88,48 @@ nsp.on('connection', function(socket){
  		
  	});
  	socket.on("message",function(data,callback){
- 		
  		//send the message to all sockets in the room, including sender
  		try{
  			nsp.in(data.channel).emit("message",data);
+ 			redis.rpush(data.channel, JSON.stringify(data));
+    		redis.ltrim(data.channel, 0, 99);
+    		redis.expire(data.channel,24*3600);
 	 	}catch(err){
 	 		console.log("error broadcasting message ",err);	
 	 	}
- 	})
+ 	});
+ 	socket.on("history",function(query,callback){
+ 		try{
+ 			var query = {
+ 				channels:query.channels,
+ 				limit:query.limit || 100
+ 			}
+ 			var response = [];
+ 			var total_channels = query.channels.length;
+ 			for(i=0; i<=total_channels; i++){
+ 				if(i < total_channels){
+ 					redis.lrange(query.channels[i],0,query.limit-1,function(err,reply){
+		 				if(!err){
+		 					for(var j in reply){
+		 						response.push(JSON.parse(reply[j]));
+		 					}
+		 				}
+	 				})	
+ 				}else{
+ 					redis.lrange(query.channels[i],0,query.limit-1,function(err,reply){
+		 				if(!err){
+		 					for(var j in reply){
+		 						response.push(JSON.parse(reply[j]));
+		 					}
+		 					callback(response);
+		 				}
+	 				})	
+ 				}
+ 				
+ 			}
+ 			
+ 		}catch(err){
+ 			console.log("error getting history",err)
+ 		}
+ 	});
 });

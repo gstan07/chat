@@ -34,7 +34,7 @@ var chatApp = {
 		lastmessage_length_to_show:30
 	},
 	init:function(){
-		chatApp["private_messages"] = [];
+		chatApp["message_history"] = {};
 		chatApp["scrollerheight"] = jQuery(window).height()-100;
 		chatApp["system"] = chatApp.getSystem();
 		chatApp.uiBindings();
@@ -90,7 +90,10 @@ var chatApp = {
 							chatApp.listenToMainChannelPresence(presence);
 						});
 						messaging.handleEvent("message",function(m){
-							chatApp.updateChatWindow(m);
+							chatApp.pushInLocalHistory(m);
+							chatApp.parseHistory({
+								animateScroll:true
+							})
 						});
 						chatApp.renderTemplate({
 							    		template:"#chatwindow",
@@ -107,16 +110,18 @@ var chatApp = {
 							    			jQuery("#mainchatscroller").css({
 							    				"max-height":chatApp.scrollerheight
 							    			});
-							    			chatApp.updateChatWindow({
-							    				
+							    			chatApp.pushInLocalHistory({
 													from:chatApp.config.admin_username,
 													type:"text",
 													text:"Hello, "+chatApp.userstate.name+"! Welcome to the chat!",
 													channel:chatApp.config.main_channel_name,
-													time:new Date().getTime()/1000,
+													time:new Date().getTime(),
 													avatar:chatApp.config.admin_image
 												
-							    			})
+							    			});
+							    			chatApp.parseHistory({
+							    				animateScroll:true
+							    			});
 							    			chatApp.updateUsersList(users);
 
 							    			chatApp.spinner.hide();
@@ -157,12 +162,167 @@ var chatApp = {
     					channel:chatApp.config.main_channel_name
     				},function(users){
     					chatApp.updateUsersList(users);
-    					chatApp.spinner.hide();
+    					messaging.history({
+    						channels:messaging.joined_channels
+    					},function(history){
+    						for(var i in history){
+    							chatApp.pushInLocalHistory(history[i]);
+    						}
+    						chatApp.parseHistory({
+    							animateScroll:false
+    						});
+    						chatApp.spinner.hide();
+    					});
+    					
     				})
 		    	}
 		    });
 	  	});
+	  	messaging.handleEvent("invitation",function(invitation){
+	  		console.log("accepting invitation...",invitation)
+	  		messaging.subscribeToChannel({
+	  			channel:[invitation.channel],
+	  			onSubscribe:function(r){
+	  				console.log(r);
+	  				//get channel history
+  					messaging.history({
+  						channels:[invitation.channel]
+  					},function(history){
+  						for(var i in history){
+  							chatApp.pushInLocalHistory(history[i]);
+  						}
+  						chatApp.parseHistory({
+  							animateScroll:false
+  						});
+  					});
+	  				
+	  			}
+	  		});
+	  	})
     	
+	},
+	pushInLocalHistory:function(message){
+		if(!chatApp.message_history[message.time]){
+			chatApp.message_history[message.time]= message;
+		}
+	},
+	parseHistory:function(settings){
+
+		for(var i in Object.keys(chatApp.message_history)){
+			var message = chatApp.message_history[Object.keys(chatApp.message_history)[i]];
+			if(!message.used){
+				if(message.channel == chatApp.config.main_channel_name){
+
+					chatApp.handleMainchatMessage(message,settings);
+
+				}else{
+
+					chatApp.handlePrivateMessage(message,settings)
+				}
+				//set the message as used in the local history so we dont look in the dom next time
+				message["used"] = true;
+			}
+		}
+	},
+	handleMainchatMessage:function(message,settings){
+		chatApp.renderTemplate({
+			template:"#chatline",
+			data:{
+				user:message.from,
+				message:message.text,
+				time:message.time,
+				avatar:message.avatar
+			},
+			onRender:function(content){
+				var mainchat = jQuery("#mainchatscroller");
+				jQuery(content).appendTo(mainchat);
+				if(settings.animateScroll){
+					mainchat.animate({
+						scrollTop:mainchat[0].scrollHeight	
+					});
+				}else{
+					mainchat.scrollTop(mainchat[0].scrollHeight)
+				}
+				
+			}
+		});
+	},
+	handlePrivateMessage:function(message,settings){
+		
+		//add item to conversation list
+		jQuery(".conversations_container .empty").remove();
+		var partner = (message.from == chatApp.userstate.name) ? message.to : message.from;
+		var lastmessagefrom = (message.from == chatApp.userstate.name) ? "you" : message.from
+		var conversation_item = jQuery(".conversation[data-channel='"+message.channel+"']");
+		
+		//update conversation list
+		chatApp.renderTemplate({
+			template:"#conversation_user",
+			data:{
+				partner:partner,
+				avatar:message.avatar,
+				ownavatar:chatApp.userstate.avatar,
+				channel:message.channel,
+				user:message.from,
+				lastmessagefrom:lastmessagefrom,
+				lastmessagetime:message.time,
+				lastmessage:message.text
+			},
+			onRender:function(content){
+				if(conversation_item.length == 0){
+					jQuery(content).prependTo(".conversations_container");
+				}else{
+					conversation_item.replaceWith(content);
+				}
+			}
+		})
+		
+		
+
+		//add chatline to private window if private window on screen
+		var private_window = jQuery("#privatewindow");
+		if(private_window.length != 0){
+			chatApp.renderTemplate({
+				template:"#chatline",
+				data:{
+					user:message.from,
+					message:message.text,
+					time:message.time,
+					avatar:message.avatar
+				},
+				onRender:function(content){
+					jQuery(".empty",private_window).remove();
+					
+					var private_chat_container = jQuery(".wrapper",private_window);
+					jQuery(content).appendTo(private_chat_container);
+					if(settings.animateScroll){
+						private_chat_container.animate({
+							scrollTop:private_chat_container[0].scrollHeight	
+						});
+					}else{
+						private_chat_container.scrollTop(private_chat_container[0].scrollHeight);
+					}
+					
+				}
+			});
+		}else{
+			jQuery(".conversation[data-channel='"+message.channel+"']").addClass("unread");
+		}
+
+		chatApp.updatePrivateNottificationBubble();
+		chatApp.reorderConversations();
+
+	},
+	reorderConversations:function(){
+		//reordering conversations list
+		var conversation_items = $(".conversation[data-channel]");
+		if(conversation_items.length > 0){
+			conversation_items.sort(function(a, b){
+			    return $(b).data("lastmsg")-$(a).data("lastmsg")
+			});
+			$(".conversations_container").html(conversation_items);	
+		}
+
 	},
 	updateUsersList:function(users){
 		chatApp.renderTemplate({
@@ -299,7 +459,7 @@ var chatApp = {
 		
 	},
 	say:function(m){
-		m["time"] = new Date().getTime()/1000;
+		m["time"] = new Date().getTime();
 		m["state"] = chatApp.userstate;
 		messaging.sendMessage(m);
 	},
@@ -314,24 +474,12 @@ var chatApp = {
 		//first ensure window is removed
 		//(it can live a little too long when animated)
 		jQuery(".private_window").remove();
-
 		var room_name = chatApp.getPrivateWindowName(partner,chatApp.userstate.name);
-		if(jQuery.inArray(partner,messaging.joined_channels) == -1){
-			//subscribing to partner channel
-			//do not broadcast presence
-			//todo: do not subscribe if already subscribed
-			messaging.subscribeToChannel({
-				channel:[partner],
-				onSubscribe:function(response){
-					console.log(response);
-				}
-			});
-		}
 		
 		
 		//make the conversation item unread
 		
-		jQuery(".conversation[data-room='"+room_name+"']").removeClass("unread");
+		jQuery(".conversation[data-channel='"+room_name+"']").removeClass("unread");
 		
 		//getting partner avatar and status
 		if((user_item = jQuery(".user[data-user='"+partner+"']")).length != 0){
@@ -351,8 +499,7 @@ var chatApp = {
 			template:"#private_conversation",
 			data:{
 				partner:partner,
-				room:room_name,
-				channel:channel,
+				channel:room_name,
 				partner_avatar_url:avatar_url,
 				status:user_status
 			},
@@ -366,8 +513,9 @@ var chatApp = {
 
 
 				//inserting history if exists
-				jQuery(chatApp.private_messages).each(function(index,message){
-					if(message.room == room_name){
+				for(var i in Object.keys(chatApp.message_history)){
+					var message = chatApp.message_history[Object.keys(chatApp.message_history)[i]];
+					if(message.channel == room_name){
 						jQuery(".private_window .empty").remove();
 						chatApp.renderTemplate({
 							template:"#chatline",
@@ -379,12 +527,13 @@ var chatApp = {
 							},
 							onRender:function(content){
 								content = jQuery(content);
-								content.appendTo("#privatewindow[data-room='"+room_name+"'] .wrapper");
+								content.appendTo("#privatewindow[data-channel='"+room_name+"'] .wrapper");
 								
 							}
 						});
 					}
-				});
+				}
+				
 
 				jQuery(".private_window").find(".wrapper").css({
 					"max-height":chatApp.scrollerheight
@@ -419,123 +568,7 @@ var chatApp = {
 		
 
 	},
-	updateChatWindow:function(m){
-		console.log(m);
-		//main chat
-		if(m.channel == chatApp.config.main_channel_name){
-			if(m.channel == chatApp.config.main_channel_name){
-				var chat_window = jQuery(".scroller[data-channel='"+m.channel+"']");
-			}
-			if(chat_window.length == 1 && chat_window.find(".chatline[data-chatline-id='"+m.from+m.time+"']").length == 0){
-					chatApp.renderTemplate({
-					template:"#chatline",
-					data:{
-						user:m.from,
-						message:m.text,
-						time:m.time,
-						avatar:m.avatar
-					},
-					onRender:function(content){
-						jQuery(content).appendTo(chat_window);
-
-						chat_window.animate({
-							scrollTop:chat_window[0].scrollHeight
-						})
-						
-					}
-				});
-			}
-		}else{
-			//private conversations
-			var room_name = m.room;
-			if(m.from == chatApp.userstate.name || //from the current user
-				m.to == chatApp.userstate.name//to the current user
-				){//from partner in conversation with the current user
-				chatApp.private_messages.push(m);
-				//update private chat window if necesary
-				var private_window = jQuery(".private_window[data-room='"+m.room+"']");
-				if(private_window.length == 1){
-					jQuery(".private_window .empty").remove();
-					chatApp.renderTemplate({
-						template:"#chatline",
-						data:{
-							user:m.from,
-							message:m.text,
-							time:m.time,
-							avatar:m.avatar
-						},
-						onRender:function(content){
-							var private_window_scroller = private_window.find(".wrapper")
-							jQuery(content).appendTo(private_window_scroller)
-							private_window_scroller.animate({
-								scrollTop:private_window_scroller[0].scrollHeight
-							})
-						}
-					});
-				}
-				//update conversations list
-				jQuery(chatApp.private_messages).each(function(index,message){
-					if(message.from == chatApp.userstate.name){
-						var partner = message.channel;
-						var from = "you";
-						var avatar = jQuery(".private_window[data-partner='"+partner+"'] .avatar img").attr("src");
-					}else{
-						var partner = message.from;
-						var from = message.from;
-						var avatar = message.avatar;
-					}
-					var conversation_item = jQuery(".conversation[data-room='"+message.room+"']");
-					if(conversation_item.length == 0){
-						
-						chatApp.renderTemplate({
-							template:"#conversation_user",
-							data:{
-								partner:partner,
-								user:partner,
-								lastmessagefrom:from,
-								room:message.room,
-								lastmessage:message.text.substr(0,chatApp.config.lastmessage_length_to_show),
-								lastmessagetime:message.time,
-								channel:message.channel,
-								avatar:avatar,
-								ownavatar:chatApp.userstate.avatar
-							},
-							onRender:function(content){
-								jQuery(".conversations_container .empty").remove();
-								jQuery(content).appendTo(".conversations_container");
-								if(private_window.length == 0){
-									
-									jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
-								}
-								jQuery(".conversation[data-room='"+room_name+"']").attr("data-status",private_window.attr("data-status"))
-							}
-						});
-					}else{
-						conversation_item.data("lastmsg",message.time);
-						conversation_item.find(".lastmsg .from").html(from);
-						conversation_item.find(".lastmsg .message").html(message.text.substr(0,chatApp.config.lastmessage_length_to_show));
-						conversation_item.find(".lastmsg .time").attr("data-livestamp",message.time);
-						if(private_window.length == 0 && room_name!=""){
-							
-							jQuery(".conversation[data-room='"+room_name+"']").addClass("unread");
-						}
-					}
-					
-				});
-				//reordering conversations list
-				var conversation_items = $(".conversation[data-room]");
-				if(conversation_items.length > 0){
-					conversation_items.sort(function(a, b){
-					    return $(b).data("lastmsg")-$(a).data("lastmsg")
-					});
-					$(".conversations_container").html(conversation_items);	
-				}
-
-				//update nottification bubble
-				chatApp.updatePrivateNottificationBubble();
-			}
-		}
-	},
+	
 	animate:function(element,animation,callback){
 		if(!element || !animation){
 			console.warn("missing element or animation")
@@ -638,7 +671,8 @@ var chatApp = {
 			var input = jQuery(this);
 			var channel = input.attr("data-channel");
 			var button =input.closest(".footer").find(".sayitbutton");
-
+			var partner = input.attr("data-partner");
+			var text = input.val();
 			if(input.val()!=""){
 				button.css({"visibility":"visible"})
 			}else{
@@ -647,21 +681,52 @@ var chatApp = {
 			//send message on enter
 			if(e.keyCode == 13 && input.val()!=""){//enter
 				
-				// input.attr({
-				// 	"disabled":"disabled",
-				// 	"placeholder":"wait..."
-				// });
-				// button.html("wait...");
-				// button.attr("disabled","disabled");
-				chatApp.say({
-						from:chatApp.username,
-						to:input.attr("data-partner"),
-						room:jQuery(this).closest("[data-room]").attr("data-room"),
-						type:"text",
-						text:input.val(),
-						channel:channel,
-						avatar:chatApp.userstate.avatar
-				});
+
+				if(jQuery.inArray(channel,messaging.joined_channels) == -1){
+					//subscribing to private conversation channel
+					//do not broadcast presence
+					//todo: do not subscribe if already subscribed
+					messaging.subscribeToChannel({
+						channel:[channel],
+						onSubscribe:function(response){
+							console.log(response);
+
+							
+
+							chatApp.say({
+								from:chatApp.username,
+								to:partner,
+								type:"text",
+								text:text,
+								channel:channel,
+								avatar:chatApp.userstate.avatar
+							});
+
+							//todo: only once
+							messaging.invite({
+								partner:partner,
+								channel:channel,
+							},function(r){
+								console.log("aaa")
+								console.log(r);
+							});
+
+						}
+					});
+				}else{
+					chatApp.say({
+								from:chatApp.username,
+								to:partner,
+								type:"text",
+								text:text,
+								channel:channel,
+								avatar:chatApp.userstate.avatar
+							});
+				}
+
+
+				
+				
 				button.css({"visibility":"hidden"})
 				input.val("");
 			}
@@ -701,7 +766,7 @@ var chatApp = {
 			}
 		});
 		//open private window from conversations list
-		jQuery(document).on("click",".conversation[data-room]",function(){
+		jQuery(document).on("click",".conversation[data-channel]",function(){
 			var partner = jQuery(this).attr("data-partner");
 			var channel = jQuery(this).attr("data-channel");
 			chatApp.animate(jQuery(this),"fadeIn");
@@ -721,7 +786,12 @@ var chatApp = {
 		jQuery(document).on("click","#mainchatscroller .chatline .user",function(e){
 			var partner = jQuery(this).closest(".chatline").attr("data-author");
 			if(partner != chatApp.userstate.name && partner != chatApp.config.admin_username){
-				chatApp.openPrivateWindow(partner,partner);
+				var user_item = jQuery("[data-user='"+partner+"']");
+				if(user_item.length != 0){
+					chatApp.openPrivateWindow(partner,partner);	
+				}else{
+					alert("This user went offline");
+				}
 			}
 		});
 	}

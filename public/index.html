@@ -75,7 +75,7 @@
 			<div class="content">
 				<div class="appview" style="display:block" data-tab="mainchat">
 					<div class="wrapper">
-						<div class="scroller" id="mainchatscroller" data-channel="<%=mainchannelname%>" data-room="<%=mainchannelname%>"></div>
+						<div class="scroller" id="mainchatscroller" data-channel="<%=mainchannelname%>"></div>
 						<div class="footer">
 							<a class="sayitbutton button" href="#">Say it</a>
 							<input data-channel="<%=mainchannelname%>" type="text" data-partner="<%=mainchannelname%>" id="postonmainchat" placeholder="say something"/>
@@ -137,28 +137,28 @@
 			<img src="<%=avatar%>" class="avatar"/>
 			<span class="user" data-status="online"><%=user%></span>
 			<span class="message"><%=message%></span>
-			<span class="time" data-livestamp="<%=time%>">&nbsp;</span>
+			<span class="time" data-livestamp="<%=time/1000%>">&nbsp;</span>
 		</div>
 	</script>
 	<script type="text/html" id="conversation_user">
-		<a class="conversation" data-status="online" data-room="<%=room%>" data-partner="<%=partner%>" data-channel="<%=channel%>" data-lastmsg="<%=lastmessagetime%>">
+		<a class="conversation" data-status="online" data-partner="<%=partner%>" data-channel="<%=channel%>" data-lastmsg="<%=lastmessagetime%>">
 								<div class="avatar me">
 									<img src="<%=ownavatar%>"/>
 								</div>
 								<div class="avatar">
 									<img src="<%=avatar%>"/>
 								</div>
-								<div class="user"><%=user%></div>
+								<div class="user"><%=partner%></div>
 								<div class="lastmsg">
 									<div class="from"><%=lastmessagefrom%>:</div>
 									<div class="message"><%=lastmessage%></div>
-									<div class="time" data-livestamp="<%=lastmessagetime%>">&nbsp;</div>
+									<div class="time" data-livestamp="<%=lastmessagetime/1000%>">&nbsp;</div>
 								</div>
 								<span class="status"></span>
 							</a>
 	</script>
 	<script type="text/html" id="private_conversation">
-		<div id="privatewindow" data-status="<%=status%>" class="private_window" data-partner="<%=partner%>" data-room="<%=room%>">
+		<div id="privatewindow" data-status="<%=status%>" class="private_window" data-partner="<%=partner%>" data-channel="<%=channel%>">
 			<div class="top_bar">
 			<a href="#" id="closeprivatewindow" class="back">
 			<img src="images/back.svg"/>
