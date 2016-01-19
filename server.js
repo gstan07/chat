@@ -13,7 +13,22 @@ var port = process.env.PORT || 3000;
 app.use('/', express.static(__dirname + '/public'));
 server.listen(port, function() { console.log('listening on port '+port)});
 
-var nsp = io.of("/plmplmplm");//todo:get this from the client
+var nsp = io.use(function(socket,next){
+	var handshake = socket.handshake.query;
+	var handshake_error = "";
+	if(handshake.app_key != "plmplmplm"){//todo:replace this with app key/domain validation
+		handshake_error = "invalid app key";		
+	}
+
+	if(handshake_error == ""){
+		next();
+	}else{
+		next(new Error('Authentication error'));	
+	}
+
+	
+	
+});//todo:get this from the client
 nsp.on('connection', function(socket){
 
 	

@@ -132,6 +132,9 @@ var chatApp = {
 	    		}
     		});
 		});
+		messaging.handleEvent("error",function(response){
+			alert(response);
+		})
 		messaging.handleEvent("disconnect",function(response){
 			chatApp.spinner.show({
 	  			style:"min",
