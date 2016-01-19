@@ -462,6 +462,10 @@ var chatApp = {
 		m["time"] = new Date().getTime();
 		m["state"] = chatApp.userstate;
 		messaging.sendMessage(m);
+		chatApp.pushInLocalHistory(m);
+		chatApp.parseHistory({animateScroll:true});
+
+		
 	},
 	updatePrivateNottificationBubble:function(){
 
