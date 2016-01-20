@@ -27,7 +27,7 @@ var default_connection = io.use(function(socket,next){
 	}	
 });
 //opening a global connection
-default_connection.on('connection', function(socket){
+default_connection.once('connection', function(socket){
 	//switching to specific namespace
 	var nsp = io.of("/"+socket.handshake.query.app_key);
 
@@ -113,9 +113,9 @@ default_connection.on('connection', function(socket){
 	 		//send the message to all sockets in the room, including sender
 	 		try{
 	 			nsp.in(data.channel).emit("message",data);
-	 			redis.rpush(data.channel, JSON.stringify(data));
-	    		redis.ltrim(data.channel, 0, 99);
-	    		redis.expire(data.channel,24*3600);
+	 			redis.rpush(socket.handshake.query.app_key+"/"+data.channel, JSON.stringify(data));
+	    		redis.ltrim(socket.handshake.query.app_key+"/"+data.channel, 0, 99);
+	    		redis.expire(socket.handshake.query.app_key+"/"+data.channel,24*3600);
 		 	}catch(err){
 		 		console.log("error broadcasting message ",err);	
 		 	}
@@ -132,7 +132,7 @@ default_connection.on('connection', function(socket){
 	 			var total_channels = query.channels.length;
 	 			for(i=0; i<=total_channels; i++){
 	 				if(i < total_channels){
-	 					redis.lrange(query.channels[i],0,query.limit-1,function(err,reply){
+	 					redis.lrange(socket.handshake.query.app_key+"/"+query.channels[i],0,query.limit-1,function(err,reply){
 			 				if(!err){
 			 					for(var j in reply){
 			 						response.push(JSON.parse(reply[j]));
