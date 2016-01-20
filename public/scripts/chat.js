@@ -133,7 +133,7 @@ var chatApp = {
     		});
 		});
 		messaging.handleEvent("error",function(response){
-			alert(response);
+			console.log("error: "+response);
 		})
 		messaging.handleEvent("disconnect",function(response){
 			chatApp.spinner.show({
