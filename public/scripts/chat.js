@@ -165,8 +165,16 @@ var chatApp = {
     					channel:chatApp.config.main_channel_name
     				},function(users){
     					chatApp.updateUsersList(users);
+    					//getting history but not from main chat channel
+    					var private_channels_joined = [];
+    					for(var i in messaging.joined_channels){
+    						if(messaging.joined_channels[i] != chatApp.config.main_channel_name){
+    							private_channels_joined.push(messaging.joined_channels[i]);
+    						}
+    					}
+
     					messaging.history({
-    						channels:messaging.joined_channels
+    						channels:private_channels_joined
     					},function(history){
     						for(var i in history){
     							chatApp.pushInLocalHistory(history[i]);

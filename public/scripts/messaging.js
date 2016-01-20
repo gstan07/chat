@@ -6,7 +6,7 @@ var messaging = {
 		
 	},
 	openSocket:function(opts){
-		this["socket"] = io("/",{ query: "app_key="+opts.app_key});
+		this["socket"] = io("/"+opts.app_key,{ query: "app_key="+opts.app_key});
 	},
 	subscribeToChannel:function(subscription){
 		subscription = {
