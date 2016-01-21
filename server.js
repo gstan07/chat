@@ -15,6 +15,7 @@ server.listen(port, function() { console.log('listening on port '+port)});
 
 var default_connection = io.use(function(socket,next){
 	var handshake = socket.handshake.query;
+	// console.log(socket.handshake.headers.host);
 	var handshake_error = "";
 	if(handshake.app_key != "plmplmplm"){//todo:replace this with app key/domain validation
 		handshake_error = "invalid app key";		
