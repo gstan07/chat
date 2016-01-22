@@ -570,6 +570,7 @@ var chatApp = {
 			messaging.emitEvent("seen",{
 				message:message.time,
 				sender:message.from,
+				receiver:message.to,
 				seen_at:seen_at
 			},function(response){
 				console.log(response)
