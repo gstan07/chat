@@ -156,6 +156,20 @@ default_connection.once('connection', function(socket){
 	 		}
 	 	});
 
+	 	socket.on("seen",function(data,callback){
+	 		try{
+	 			for(i in nsp.sockets){
+					var target_socket = nsp.sockets[i];
+					if(target_socket.state.name == data.sender){
+						nsp.sockets[target_socket.id].emit("seen",data,function(){
+							callback("Seen event emited to "+target_socket.state.name)
+						});
+					}
+				}
+	 		}catch(err){
+	 			console.log(err);
+	 		}
+	 	});
 
 	})
 });

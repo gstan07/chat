@@ -204,7 +204,11 @@ var chatApp = {
 	  				
 	  			}
 	  		});
-	  	})
+	  	});
+
+	  	messaging.handleEvent("seen",function(data){
+	  		console.log(data);
+	  	});
     	
 	},
 	pushInLocalHistory:function(message){
@@ -311,7 +315,7 @@ var chatApp = {
 					}else{
 						private_chat_container.scrollTop(private_chat_container[0].scrollHeight);
 					}
-					
+					chatApp.sendSeenEvent(message);
 				}
 			});
 		}else{
@@ -541,7 +545,7 @@ var chatApp = {
 							onRender:function(content){
 								content = jQuery(content);
 								content.appendTo("#privatewindow[data-channel='"+room_name+"'] .wrapper");
-								
+								chatApp.sendSeenEvent(message);
 							}
 						});
 					}
@@ -556,6 +560,21 @@ var chatApp = {
 				private_window_scroller.scrollTop(private_window_scroller[0].scrollHeight)
 			}
 		});
+	},
+	sendSeenEvent:function(message){
+		if(!message.seen_at && message.from != chatApp.userstate.name){
+			console.log("seen",message);
+			var seen_at = new Date().getTime();
+			chatApp.message_history[message.time]["seen_at"] = seen_at;
+			
+			messaging.emitEvent("seen",{
+				message:message.time,
+				sender:message.from,
+				seen_at:seen_at
+			},function(response){
+				console.log(response)
+			});
+		}								
 	},
 	getPrivateWindowName:function(username1,username2){
 		if(username1 && username2){

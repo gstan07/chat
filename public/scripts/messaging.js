@@ -61,6 +61,13 @@ var messaging = {
 			})
 		}
 	},
+	emitEvent:function(event,data,callback){
+		messaging.socket.emit(event,data,function(response){
+			try{
+				callback(response)
+			}catch(err){}
+		})
+	},
 	setState:function(state){
 		messaging.socket.emit("state",state);
 	},
