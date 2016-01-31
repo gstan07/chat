@@ -133,12 +133,28 @@
 		
 	</script>
 	<script type="text/html" id="chatline">
-		<div data-chat-id="<%=user%><%=time%>" class="chatline animated fadeIn" data-author="<%=user%>">
+		<div data-chat-id="<%=from%><%=time%>" class="chatline animated fadeIn" data-author="<%=from%>" data-messagestatus="<%=status%>">
 			<img src="<%=avatar%>" class="avatar"/>
-			<span class="user" data-status="online"><%=user%></span>
-			<span class="message"><%=message%></span>
-			<span class="time" data-livestamp="<%=time/1000%>">
-				&nbsp;
+			<span class="user" data-status="online">
+				<%=from%>
+			</span>
+			<span class="message"><%=text%></span>
+			<%if(status!="seen"){
+				%>
+					<span class="time">
+						<%if(status=="sent"){
+							%>
+								sent 
+							<%
+						}%>
+						<span data-livestamp="<%=time/1000%>">&nbsp;</span>
+					</span>	
+				<%
+			}%>
+			
+			<span class="messagestatus">
+				<span class="sent">not yet seen</span>
+				<span class="seen">seen <span data-livestamp="<%=seen_at/1000%>">&nbsp;</span></span>
 			</span>
 		</div>
 	</script>

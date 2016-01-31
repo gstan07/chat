@@ -345,13 +345,26 @@ text-size-adjust: none;
 				font-weight: bold;
 				padding-right:10px;
 			}
-			.time{
+			.time,.messagestatus{
 				color:@gray3;
 				display: block;
 				padding-top: 5px;
 				/*font-style: italic;*/
 				font-size:12px;
 			}
+			.messagestatus{
+				span{
+					display: none;
+				}
+			}
+			&[data-messagestatus="sent"] .messagestatus .sent,
+			&[data-messagestatus="seen"] .messagestatus .seen{
+				display: inline;
+				span{display: inline}
+			}
+		}
+		#mainchatscroller .messagestatus{
+			display: none!important;
 		}
 	}
 	.private_window{

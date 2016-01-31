@@ -11,8 +11,8 @@ var chatApp = {
 		allow_guest_user:true,
 		main_channel_name:"mainchat",
 		warn_on_reload:false,
-		admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
-
+		//admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
+		admin_image:"images/avatars/generic.jpeg",
 		guest_image:[
 			"images/avatars/generic.jpeg"
 			// "images/avatars/a2.png",
@@ -207,7 +207,22 @@ var chatApp = {
 	  	});
 
 	  	messaging.handleEvent("seen",function(data){
-	  		console.log(data);
+	  		//if the message is on the screen set dom status as seen
+	  		chatApp.message_history[data.message].status = "seen";
+	  		chatApp.message_history[data.message].seen_at = data.seen_at;
+	  		console.log(chatApp.message_history[data.message]);
+	  		chatApp.renderTemplate({
+	  			template:"#chatline",
+	  			data:chatApp.message_history[data.message],
+	  			onRender:function(content){
+	  				jQuery(".chatline[data-chat-id='"+data.sender+data.message+"']").replaceWith(content)		
+	  			}
+	  		});
+	  		// jQuery(".chatline[data-chat-id='"+data.sender+data.message+"']").attr("data-messagestatus","seen");
+	  		//add seen flag to local history 
+	  		
+	  		chatApp.parseHistory()
+
 	  	});
     	
 	},
@@ -241,10 +256,12 @@ var chatApp = {
 		chatApp.renderTemplate({
 			template:"#chatline",
 			data:{
-				user:message.from,
-				message:message.text,
+				from:message.from,
+				text:message.text,
 				time:message.time,
-				avatar:message.avatar
+				avatar:message.avatar,
+				status:message.status,
+				seen_at:"0"
 			},
 			onRender:function(content){
 				var mainchat = jQuery("#mainchatscroller");
@@ -279,7 +296,8 @@ var chatApp = {
 				user:message.from,
 				lastmessagefrom:lastmessagefrom,
 				lastmessagetime:message.time,
-				lastmessage:message.text
+				lastmessage:message.text,
+				status:message.status
 			},
 			onRender:function(content){
 				if(conversation_item.length == 0){
@@ -298,10 +316,12 @@ var chatApp = {
 			chatApp.renderTemplate({
 				template:"#chatline",
 				data:{
-					user:message.from,
-					message:message.text,
+					from:message.from,
+					text:message.text,
 					time:message.time,
-					avatar:message.avatar
+					avatar:message.avatar,
+					status:message.status,
+					seen_at:message.seen_at
 				},
 				onRender:function(content){
 					jQuery(".empty",private_window).remove();
@@ -475,6 +495,7 @@ var chatApp = {
 		m["time"] = new Date().getTime();
 		m["state"] = chatApp.userstate;
 		messaging.sendMessage(m);
+		m["status"] = "sent";
 		chatApp.pushInLocalHistory(m);
 		chatApp.parseHistory({animateScroll:true});
 
@@ -537,10 +558,12 @@ var chatApp = {
 						chatApp.renderTemplate({
 							template:"#chatline",
 							data:{
-								user:message.from,
-								message:message.text,
+								from:message.from,
+								text:message.text,
 								time:message.time,
-								avatar:message.avatar
+								avatar:message.avatar,
+								status:message.status,
+								seen_at:message.seen_at
 							},
 							onRender:function(content){
 								content = jQuery(content);
