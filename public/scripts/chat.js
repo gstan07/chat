@@ -68,10 +68,13 @@ var chatApp = {
 								},
 								onRender:function(content){
 									jQuery("#chat_container").html(content);
-									chatApp.spinner.hide()
-									jQuery("#avatars").animate({
-										scrollTop:400
-									},1000);
+									jQuery("#chat_container").imagesLoaded(function(){
+										chatApp.spinner.hide()
+										jQuery("#avatars").animate({
+											scrollTop:400
+										},1000);
+									});
+									
 									jQuery("#avatarchoice").validate({
 										ignore: [],
 										messages:{
