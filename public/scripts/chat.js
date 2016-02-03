@@ -308,7 +308,7 @@ var chatApp = {
 		});
 	},
 	handlePrivateMessage:function(message,settings){
-		
+		console.log(message);
 		//add item to conversation list
 		jQuery(".conversations_container .empty").remove();
 		var partner = (message.from == chatApp.userstate.name) ? message.to : message.from;
@@ -330,6 +330,7 @@ var chatApp = {
 				status:message.status
 			},
 			onRender:function(content){
+				console.log(content);
 				if(conversation_item.length == 0){
 					jQuery(content).prependTo(".conversations_container");
 				}else{
@@ -491,6 +492,7 @@ var chatApp = {
 		//todo:notice main chat
 	},
 	handleUserJoin:function(presence){
+		chatApp.users[presence.user.name] = presence.user;
 		//partner back in?
 		jQuery(".conversation[data-partner='"+presence.user.name+"']").attr("data-status","online");
 
