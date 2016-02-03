@@ -44,15 +44,17 @@ var chatApp = {
 			//todo place user here
 			chatApp.startChat();
 		}else{
-			
+			chatApp.spinner.show()
 			chatApp.renderTemplate({
 				template:"#startscreen",
 				
 				onRender:function(content){
 
 					jQuery("#chat_container").html(content);
+					chatApp.spinner.hide()
 					jQuery("#usernameform").validate({
 						submitHandler:function(){
+							chatApp.spinner.show()
 							var avatars = [];
 							for(i=1;i<=81;i++){
 								var count = (i<10)? "0"+i : i;
@@ -66,6 +68,7 @@ var chatApp = {
 								},
 								onRender:function(content){
 									jQuery("#chat_container").html(content);
+									chatApp.spinner.hide()
 									jQuery("#avatars").animate({
 										scrollTop:400
 									},1000);
@@ -308,7 +311,6 @@ var chatApp = {
 		});
 	},
 	handlePrivateMessage:function(message,settings){
-		console.log(message);
 		//add item to conversation list
 		jQuery(".conversations_container .empty").remove();
 		var partner = (message.from == chatApp.userstate.name) ? message.to : message.from;
@@ -451,12 +453,14 @@ var chatApp = {
 	spinner:{
 		spinner_obj:jQuery("#chatapp .spinner"),
 		show:function(data){
-			if(data.style){
-				this.spinner_obj.addClass(data.style)
-			}
-			if(data.msg){
-				chatApp.spinner.spinner_obj.find(".msg").html(data.msg);
-			}
+			try{
+				if(data.style){
+					this.spinner_obj.addClass(data.style)
+				}
+				if(data.msg){
+					chatApp.spinner.spinner_obj.find(".msg").html(data.msg);
+				}
+			}catch(err){}
 			chatApp.spinner.spinner_obj.show();
 		},
 		hide:function(){
@@ -701,10 +705,12 @@ var chatApp = {
 			jQuery("label[for='choosenavatar']").remove();
 		});
 		jQuery(document).on("click","#backtousername",function(){
+			chatApp.spinner.show()
 			chatApp.renderTemplate({
 				template:"#startscreen",
 				onRender:function(content){
 					jQuery("#chat_container").html(content);
+					chatApp.spinner.hide()
 					jQuery("#username").focus();
 				}
 			});
