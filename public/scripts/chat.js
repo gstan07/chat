@@ -122,7 +122,7 @@ var chatApp = {
 						for(i in users){
 							if(users[i].name == chatApp.userstate.name && users[i].clientId != chatApp.userstate.clientId ){
 								//duplicate user
-								alert("username already connected")
+								alert("Someone with this username is already connected")
 								window.location.reload();
 							}
 						}
