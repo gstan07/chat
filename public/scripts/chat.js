@@ -78,6 +78,7 @@ var chatApp = {
 											avatar:"choose an avatar"
 										},
 										submitHandler:function(){
+											chatApp.spinner.show();
 											chatApp["userstate"] = {
 												name:jQuery("#username").val(),
 												avatar:jQuery("#choosenavatar").val(),
@@ -93,7 +94,7 @@ var chatApp = {
 						}
 					});
 					jQuery("#avatars").scrollLeft(4000);
-					chatApp.spinner.hide();
+					// chatApp.spinner.hide();
 					jQuery("#username").focus();
 					
 				}
