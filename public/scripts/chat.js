@@ -84,7 +84,8 @@ var chatApp = {
 												avatar:jQuery("#choosenavatar").val(),
 												idle:false,
 												isTyping : false,
-												isGuest:true
+												isGuest:true,
+												clientId:Math.random()
 											};
 											chatApp.startChat();
 										}
@@ -115,10 +116,16 @@ var chatApp = {
 	    		channel:[chatApp.config.main_channel_name,chatApp.userstate.name],
 	    		broadcast_presence:true,
 	    		onSubscribe:function(m){
-	    			console.log(m)
 	    			messaging.getUserList({
 						channel:chatApp.config.main_channel_name
 					},function(users){
+						for(i in users){
+							if(users[i].name == chatApp.userstate.name && users[i].clientId != chatApp.userstate.clientId ){
+								//duplicate user
+								alert("username already connected")
+								window.location.reload();
+							}
+						}
 						//user list received
 						messaging.handleEvent("presence",function(presence){
 							chatApp.listenToMainChannelPresence(presence);
@@ -483,18 +490,21 @@ var chatApp = {
 		}
 	},
 	handleUserleave:function(presence){
-		//remove user from list
-		jQuery("[data-tab=userslist] [data-user="+presence.user.name+"]").remove();
-		jQuery("#main_occupancy").html(jQuery("[data-tab=userslist] [data-user]").length);
-		//update conversation list for current user if a partner left
-		jQuery(".conversation[data-partner='"+presence.user.name+"']").attr("data-status","offline");
-		//update users lines on main chat
-		jQuery("#mainchatscroller .chatline[data-author='"+presence.user.name+"'] .user").attr("data-status","offline");
-		//todo update current private window if opened
-		var private_window = jQuery("#privatewindow[data-partner='"+presence.user.name+"']");
-		private_window.attr("data-status","offline");
-		private_window.find(".userstatus").html("offline");
+		if(presence.user.name != chatApp.userstate.name){//some other user was kicked for duplicate username
+			//remove user from list
+			jQuery("[data-tab=userslist] [data-user="+presence.user.name+"]").remove();
+			jQuery("#main_occupancy").html(jQuery("[data-tab=userslist] [data-user]").length);
+			//update conversation list for current user if a partner left
+			jQuery(".conversation[data-partner='"+presence.user.name+"']").attr("data-status","offline");
+			//update users lines on main chat
+			jQuery("#mainchatscroller .chatline[data-author='"+presence.user.name+"'] .user").attr("data-status","offline");
+			//todo update current private window if opened
+			var private_window = jQuery("#privatewindow[data-partner='"+presence.user.name+"']");
+			private_window.attr("data-status","offline");
+			private_window.find(".userstatus").html("offline");
 		//todo:notice main chat
+		}
+		
 	},
 	handleUserJoin:function(presence){
 		chatApp.users[presence.user.name] = presence.user;
@@ -751,7 +761,8 @@ var chatApp = {
 				avatar:chatApp.config.guest_image,
 				idle:false,
 				isTyping : false,
-				isGuest:true
+				isGuest:true,
+				clientId:Math.rand()
 			};
 			chatApp["username"] = jQuery(this).attr("data-guestname");
 			chatApp.spinner.show({
