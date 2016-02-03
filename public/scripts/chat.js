@@ -14,19 +14,17 @@ var chatApp = {
 		//admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
 		admin_image:"images/avatars/generic.jpeg",
 		guest_image:[
-			"images/avatars/generic.jpeg"
-			// "images/avatars/a2.png",
-			// "images/avatars/a3.png",
-			// "images/avatars/a4.png",
-			// "images/avatars/a5.png",
-			// "images/avatars/a6.png",
-			// "images/avatars/a7.png",
-			// "images/avatars/a8.png",
-			// "images/avatars/a9.png",
-			// "images/avatars/a10.png",
-			// "images/avatars/a11.png",
-			// "images/avatars/a12.png"
-			][Math.floor(Math.random() * 1)],
+			"images/avatars2/images/avatars_01.png",
+			"images/avatars2/images/avatars_02.png",
+			"images/avatars2/images/avatars_03.png",
+			"images/avatars2/images/avatars_04.png",
+			"images/avatars2/images/avatars_05.png",
+			"images/avatars2/images/avatars_06.png",
+			"images/avatars2/images/avatars_07.png",
+			"images/avatars2/images/avatars_08.png",
+			"images/avatars2/images/avatars_09.png",
+			"images/avatars2/images/avatars_10.png"
+			][Math.floor(Math.random() * 10)],
 		admin_username:"System",
 		use_animations:true,
 		private_window_animation_in:"slideInRight",//animate.css
@@ -46,28 +44,60 @@ var chatApp = {
 			//todo place user here
 			chatApp.startChat();
 		}else{
+			
 			chatApp.renderTemplate({
-				template:"#loginscreen",
+				template:"#startscreen",
+				
 				onRender:function(content){
+
 					jQuery("#chat_container").html(content);
+					jQuery("#usernameform").validate({
+						submitHandler:function(){
+							var avatars = [];
+							for(i=1;i<=81;i++){
+								var count = (i<10)? "0"+i : i;
+								avatars.push("images/avatars2/images/avatars_"+count+".png");
+							}
+							chatApp.renderTemplate({
+								template:"#chooseavatar",
+								data:{
+									avatar:avatars,
+									username:jQuery("#username").val()
+								},
+								onRender:function(content){
+									jQuery("#chat_container").html(content);
+									jQuery("#avatars").animate({
+										scrollTop:400
+									},1000);
+									jQuery("#avatarchoice").validate({
+										ignore: [],
+										messages:{
+											avatar:"choose an avatar"
+										},
+										submitHandler:function(){
+											chatApp["userstate"] = {
+												name:jQuery("#username").val(),
+												avatar:jQuery("#choosenavatar").val(),
+												idle:false,
+												isTyping : false,
+												isGuest:true
+											};
+											chatApp.startChat();
+										}
+									});
+								}
+							});
+						}
+					});
+					jQuery("#avatars").scrollLeft(4000);
 					chatApp.spinner.hide();
 					jQuery("#username").focus();
-					if(chatApp.config.allow_guest_user){
-						var colors = ["darker","black","dark","orange","red","green","blue","white","brown","violet","pink","gray","silver","golden","maroon"];
-						var animals = ["dog", "cat", "monkey", "donkey", "dino", "elephant","horse","camel","kangaroo","fish","gorilla","iguana","lizard","turkey","shark","ostrich","butterfly","zebra","owl","eagle","bear","panther","tiger","wolf","pigeon","jaguar","fox","lion"];
-						var rand_color = colors[Math.floor(Math.random() * colors.length)]
-						var rand_animal = animals[Math.floor(Math.random() * animals.length)]
-						var guestname = rand_color+""+rand_animal+""+Math.floor(Math.random()*1000);
-						jQuery("#signinasguest").attr("data-guestname",guestname);
-						jQuery("#signinasguest strong").html(guestname);
-					}else{
-						jQuery("#signinasguest").remove();
-					}
+					
 				}
 			});
 		}
 	},
-	startChat:function(username){
+	startChat:function(){
 
 
 		messaging.init({
@@ -290,7 +320,7 @@ var chatApp = {
 			template:"#conversation_user",
 			data:{
 				partner:partner,
-				avatar:message.avatar,
+				avatar:chatApp.users[partner].avatar,
 				ownavatar:chatApp.userstate.avatar,
 				channel:message.channel,
 				user:message.from,
@@ -358,11 +388,15 @@ var chatApp = {
 
 	},
 	updateUsersList:function(users){
+		chatApp["users"] = {};
+		for(i in users){
+			chatApp.users[users[i].name] = users[i];
+		}
 		chatApp.renderTemplate({
 			template:"#user_item_template",
 			data:{
 				users:users,
-				username:chatApp.username
+				username:chatApp.userstate.name
 			},
 			onRender:function(content){
 				jQuery("div[data-tab='userslist'] .scroller").html(content);
@@ -473,7 +507,7 @@ var chatApp = {
 			template:"#user_item_template",
 			data:{
 				users:[presence.user],
-				username:chatApp.username
+				username:chatApp.userstate.name
 				
 			},
 			onRender:function(content){
@@ -655,6 +689,24 @@ var chatApp = {
 		
 
 
+		jQuery(document).on("click","#avatars img",function(){
+			jQuery("#avatars img").removeClass("selected");
+			jQuery(this).addClass("selected");
+			chatApp.animate(jQuery(this),"fadeIn");
+			jQuery("#sampleavatar").attr("src",jQuery(this).attr("src"));
+			jQuery("#choosenavatar").val(jQuery(this).attr("src"));
+			chatApp.animate(jQuery("#sampleavatar"),"bounceIn");
+			jQuery("label[for='choosenavatar']").remove();
+		});
+		jQuery(document).on("click","#backtousername",function(){
+			chatApp.renderTemplate({
+				template:"#startscreen",
+				onRender:function(content){
+					jQuery("#chat_container").html(content);
+					jQuery("#username").focus();
+				}
+			});
+		});
 		//click on the register link
 		jQuery(document).on("click","#register",function(){
 			chatApp.renderTemplate({
@@ -696,7 +748,7 @@ var chatApp = {
 			chatApp.spinner.show({
 				msg:"Entering as <strong>"+chatApp["username"]+"</strong>"
 			});
-			chatApp.startChat(chatApp.userstate.name);
+			chatApp.startChat();
 		});
 		//try to prevent reload
 		if(chatApp.config.warn_on_reload){
@@ -750,7 +802,7 @@ var chatApp = {
 							
 
 							chatApp.say({
-								from:chatApp.username,
+								from:chatApp.userstate.name,
 								to:partner,
 								type:"text",
 								text:text,
@@ -771,7 +823,7 @@ var chatApp = {
 					});
 				}else{
 					chatApp.say({
-								from:chatApp.username,
+								from:chatApp.userstate.name,
 								to:partner,
 								type:"text",
 								text:text,
@@ -815,7 +867,7 @@ var chatApp = {
 		jQuery(document).on("click","[data-user]",function(){
 			var partner = jQuery(this).attr("data-user");
 			chatApp.animate(jQuery(this),"fadeIn");
-			if(partner != chatApp.username){
+			if(partner != chatApp.userstate.name){
 				chatApp.openPrivateWindow(partner,partner);
 			}else{
 				jQuery("a[data-tab='settings']").click();

@@ -10,7 +10,39 @@
 		</div>
 		<div id="chat_container"></div>
 	</body>
-
+	<script id="startscreen" type="text/html">
+		<form id="usernameform">
+			<h1>Hello</h1>
+			<div class="row">
+				<label for="username">Username: <input required type="text" id="username" name="username"/></label>
+			</div>
+			
+			<div class="row">
+				<input type="submit" value="Next"/>
+			</div>
+		</form>
+	</script>
+	<script id="chooseavatar" type="text/html">
+		<form id="avatarchoice">
+			<div class="row"><a href="#" id="backtousername">back</a></a>
+			<label>Hello <%=username%>, choose an avatar</label>
+			<div class="avatars" id="avatars">
+				
+					<% _.each(avatar, function(avatar) { %>
+						<img src="<%=avatar%>"/>
+					<%})%>
+				
+			</div>
+			<input type="hidden" name="username" id="username" value="<%=username%>"/>
+			<input type="hidden" name="avatar" id="choosenavatar" value="" required/>
+			<div class="row userdemo">
+				<img id="sampleavatar" src="images/avatars/generic.jpeg"><%=username%>
+			</div>
+			<div class="row">
+				<input type="submit" value="Start chat"/>
+			</div>
+		</form>
+	</script>
 	<script type="text/html" id="loginscreen">
 		<form id="loginform">
 		<div class="row">
@@ -208,6 +240,7 @@
 		</div>
 	</script>
 	<script src="scripts/libs/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="scripts/messaging.js"></script>
 		<script src="scripts/libs/parse-1.6.12.min.js"></script>
