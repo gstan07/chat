@@ -12,9 +12,10 @@
 	</body>
 	<script id="startscreen" type="text/html">
 		<form id="usernameform">
-			<h1>Hello</h1>
+			<h1>Hi there</h1>
+			<div class="row"><p>Welcome to the chat. Start by choosing a nickname</p></div>
 			<div class="row">
-				<label for="username">Username: <input required type="text" id="username" name="username"/></label>
+				<label for="username">Nickname: <input required type="text" id="username" name="username"/></label>
 			</div>
 			
 			<div class="row">
@@ -25,7 +26,11 @@
 	<script id="chooseavatar" type="text/html">
 		<form id="avatarchoice">
 			<div class="row"><a href="#" id="backtousername">back</a></a>
-			<label>Hello <%=username%>, choose an avatar</label>
+			<h1>Hello <%=username%></h1>
+			<div class="row">
+				<p>Choose an avatar</p>
+			</div>
+			
 			<div class="avatars" id="avatars">
 				
 					<% _.each(avatar, function(avatar) { %>

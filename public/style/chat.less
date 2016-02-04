@@ -28,7 +28,11 @@ body{
 	background-color: @grey1;
 }
 #chatapp{
-
+h1{
+	font-size:28px;
+	font-weight: 400;
+	margin:5px 0;
+}
 /*//disable user selection*/
 -webkit-user-select: none;  /* Chrome all / Safari all */
   -moz-user-select: none;     /* Firefox all */
@@ -357,6 +361,7 @@ text-size-adjust: none;
 				height: 50px;
 				padding:10px 100px 10px 10px; 
 				font-size:16px;
+				;
 			}
 			a.button{
 				position: absolute;
@@ -517,7 +522,11 @@ text-size-adjust: none;
 		font-style: italic;
 	}
 	div.row{
-		
+		color:#333;
+		font-size:14px;
+		p{
+			padding:10px 0;
+		}
 		margin-bottom:10px;
 		&.spacetop{
 			margin-top:20px;
@@ -545,7 +554,9 @@ text-size-adjust: none;
 				padding:10px;
 				width:100%;
 				border-radius:0;
+				border:1px solid #ccc;
 				font-size:16px;
+				border-radius:5px;
 				
 			}
 			small{
@@ -570,6 +581,7 @@ text-size-adjust: none;
 				-webkit-appearance: none;
 				text-align: center;
 				display: block;
+				border-radius:5px;
 				&.quiet{
 					background-color: lighten(@main_header,30%);
 				}
