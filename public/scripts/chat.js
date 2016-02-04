@@ -707,7 +707,9 @@ var chatApp = {
 	},
 	uiBindings:function(){
 		
-
+		jQuery(document).on("click","#signout",function(){
+			window.location.reload();
+		});
 
 		jQuery(document).on("click","#avatars img",function(){
 			jQuery("#avatars img").removeClass("selected");
