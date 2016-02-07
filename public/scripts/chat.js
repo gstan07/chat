@@ -32,14 +32,14 @@ var chatApp = {
 		lastmessage_length_to_show:30
 	},
 	init:function(){
+
+
+
 		chatApp["message_history"] = {};
 		chatApp["scrollerheight"] = jQuery(window).height()-100;
 		chatApp["system"] = chatApp.getSystem();
 		chatApp.uiBindings();
-		Parse.initialize(
-			chatApp.config.parse.application_id,
-			chatApp.config.parse.javascript_key
-		);
+		
 		if(chatApp.isUserAuthenticated()){
 			//todo place user here
 			chatApp.startChat();
@@ -359,6 +359,11 @@ var chatApp = {
 		var lastmessagefrom = (message.from == chatApp.userstate.name) ? "you" : message.from
 		var conversation_item = jQuery(".conversation[data-channel='"+message.channel+"']");
 		
+		
+		//notification
+		
+		
+
 		//update conversation list
 		chatApp.renderTemplate({
 			template:"#conversation_user",
@@ -418,12 +423,38 @@ var chatApp = {
 				}
 			});
 		}else{
+			if(message.from != chatApp.userstate.name){
+				chatApp.notify(message);
+			}
 			jQuery(".conversation[data-channel='"+message.channel+"']").addClass("unread");
 		}
 
 		chatApp.updatePrivateNottificationBubble();
 		chatApp.reorderConversations();
 
+	},
+	notify:function(message){
+		var myNotification = new Notify(message.from, {
+	    	body: message.text,
+	    	icon: message.avatar,
+	    	timeout: 3,
+	    	notifyClick:function(){
+	    		jQuery("#privatewindow").remove();
+	    		chatApp.openPrivateWindow(message.from,message.channel);
+	    	}
+		});
+		if(Notify.isSupported){
+			if (Notify.needsPermission){
+			    	Notify.requestPermission(function(){
+			    		myNotification.show();
+			    	}, function(){
+			    	
+			    	});
+			}else{
+				myNotification.show();
+			}
+		}
+		
 	},
 	reorderConversations:function(){
 		//reordering conversations list
