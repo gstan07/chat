@@ -268,6 +268,37 @@ var chatApp = {
 	  		chatApp.parseHistory()
 
 	  	});
+	  	messaging.handleEvent("state",function(state){
+	  		
+	  		//handle istyping
+	  		var private_window = jQuery("#privatewindow[data-partner='"+state.name+"'] .chatlines .wrapper");
+	  		if(private_window.length == 1){ 
+	  			//if there is a private window with the state emiter
+		  		
+		  		if(state.isTyping == chatApp.userstate.name){//is typing for the current user
+		  			//should show typing indicator
+		  			if(state.isTyping != false){
+		  				chatApp.renderTemplate({
+		  					template:"#istyping",
+		  					data:{
+		  						partner:state.name,
+		  						partner_avatar_url:state.avatar
+		  					},
+		  					onRender:function(content){
+
+		  						jQuery(content).appendTo(private_window);
+		  						private_window.scrollTop(private_window[0].scrollHeight);
+
+		  					}
+		  				});
+		  			}
+		  		}else{
+		  			private_window.find(".istyping").remove();
+		  			private_window.scrollTop(private_window[0].scrollHeight);
+		  		}
+	  		}
+	  		
+	  	});
     	
 	},
 	pushInLocalHistory:function(message){
@@ -343,7 +374,7 @@ var chatApp = {
 				status:message.status
 			},
 			onRender:function(content){
-				console.log(content);
+				
 				if(conversation_item.length == 0){
 					jQuery(content).prependTo(".conversations_container");
 				}else{
@@ -378,6 +409,10 @@ var chatApp = {
 						});
 					}else{
 						private_chat_container.scrollTop(private_chat_container[0].scrollHeight);
+					}
+					//if not own message, remove istyping note
+					if(message.from != chatApp.userstate.name){
+						private_chat_container.find(".istyping").remove();
 					}
 					chatApp.sendSeenEvent(message);
 				}
@@ -479,7 +514,7 @@ var chatApp = {
 		}
 	},
 	listenToMainChannelPresence:function(presence){
-		console.log(presence);
+		// console.log(presence);
 		
 		switch(presence.action){
 			case "leave":
@@ -640,7 +675,7 @@ var chatApp = {
 	},
 	sendSeenEvent:function(message){
 		if(!message.seen_at && message.from != chatApp.userstate.name){
-			console.log("seen",message);
+			// console.log("seen",message);
 			var seen_at = new Date().getTime();
 			chatApp.message_history[message.time]["seen_at"] = seen_at;
 			
@@ -650,7 +685,7 @@ var chatApp = {
 				receiver:message.to,
 				seen_at:seen_at
 			},function(response){
-				console.log(response)
+				// console.log(response)
 			});
 		}								
 	},
@@ -704,6 +739,37 @@ var chatApp = {
 
 
 		return to_return;
+	},
+
+	monitorTyping:function(partner){
+		lastType = new Date().getTime()/1000;
+		
+		chatApp.userstate.isTyping = partner;
+		messaging.setState(chatApp.userstate);
+		// if(_.isEqual(chatApp.savedstate,chatApp.userstate) == false){
+		// 	messaging.setState(chatApp.userstate);
+		// 	chatApp["savedstate"]= chatApp.userstate;
+		// }
+		
+		
+		if(typeof(typeChecker) == "undefined"){
+
+			typeChecker = setInterval(function(){
+				// console.log("saved",chatApp.savedstate,"current",chatApp.userstate);
+				now = new Date().getTime()/1000
+				if((now-lastType)>1){
+					
+					chatApp.userstate.isTyping = false;
+					
+					// if(_.isEqual(chatApp.savedstate,chatApp.userstate) == false){
+					
+						messaging.setState(chatApp.userstate);
+						// chatApp["savedstate"] = chatApp.userstate;
+					// }
+				}
+			},2000);
+			
+		}
 	},
 	uiBindings:function(){
 		
@@ -805,6 +871,9 @@ var chatApp = {
 			var channel = input.attr("data-channel");
 			var button =input.closest(".footer").find(".sayitbutton");
 			var partner = input.attr("data-partner");
+			if(partner != chatApp.config.main_channel_name){
+				chatApp.monitorTyping(partner);
+			}
 			var text = input.val();
 			if(input.val()!=""){
 				button.css({"visibility":"visible"})
@@ -822,7 +891,7 @@ var chatApp = {
 					messaging.subscribeToChannel({
 						channel:[channel],
 						onSubscribe:function(response){
-							console.log(response);
+							// console.log(response);
 
 							
 

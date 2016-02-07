@@ -74,7 +74,18 @@ default_connection.once('connection', function(socket){
 
 
 		socket.on("state",function(data){
-			socket["state"] = data;
+			//only emit if changed
+			var shouldEmitState = false;
+			if(typeof(socket.state) == "undefined"){
+				shouldEmitState = true;
+			}else if(JSON.stringify(socket.state) != JSON.stringify(data)){
+				shouldEmitState = true;
+			}
+			if(shouldEmitState){
+				socket["state"] = data;
+				nsp.emit("state",data);
+			}
+			
 		});
 
 

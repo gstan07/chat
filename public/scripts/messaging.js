@@ -69,7 +69,9 @@ var messaging = {
 		})
 	},
 	setState:function(state){
-		messaging.socket.emit("state",state);
+		
+			messaging.socket.emit("state",state);
+		
 	},
 	invite:function(invitation,callback){
 		messaging.socket.emit("invitation",invitation,function(response){
