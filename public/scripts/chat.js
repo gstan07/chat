@@ -53,6 +53,18 @@ var chatApp = {
 					jQuery("#chat_container").html(content);
 					chatApp.spinner.hide()
 					jQuery("#usernameform").validate({
+						rules:{
+							username:{
+								minlength:3
+							}
+						},
+						errorPlacement: function(error, element) {
+						    if(element.closest(".row").length == 1) {
+						      error.insertAfter(element.closest(".row"));
+						    }else {
+						      error.insertAfter(element);
+						    }
+						 },
 						submitHandler:function(){
 							chatApp.spinner.show()
 							var avatars = [];
@@ -78,7 +90,7 @@ var chatApp = {
 									jQuery("#avatarchoice").validate({
 										ignore: [],
 										messages:{
-											avatar:"choose an avatar"
+											avatar:"Please choose an avatar"
 										},
 										submitHandler:function(){
 											chatApp.spinner.show();
@@ -167,7 +179,9 @@ var chatApp = {
 							    				animateScroll:true
 							    			});
 							    			chatApp.updateUsersList(users);
-
+							    			jQuery("body").css({
+							    				"background-image":"none"
+							    			});
 							    			chatApp.spinner.hide();
 							    			
 							    		}
