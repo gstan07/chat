@@ -30,7 +30,8 @@ var chatApp = {
 		private_window_animation_out:"slideOutLeft",//animate.css
 		lastmessage_length_to_show:30,
 		thumbnail_width:100,
-		message_max_length:100
+		message_max_length:100,
+		enableBots:true
 	},
 	init:function(){
 
@@ -181,7 +182,16 @@ var chatApp = {
 							    			chatApp.parseHistory({
 							    				animateScroll:true
 							    			});
-							    			chatApp.updateUsersList(users);
+							    			if(chatApp.config.enableBots){
+												jQuery.getJSON("scripts/bots.json",function(data){
+													jQuery.each(data,function(index,value){
+														users.push(value);
+													});
+													chatApp.updateUsersList(users);
+												});
+											}else{
+							    				chatApp.updateUsersList(users);
+							    			}
 							    			jQuery("body").css({
 							    				"background-image":"none"
 							    			});
@@ -225,7 +235,16 @@ var chatApp = {
 		    		messaging.getUserList({
     					channel:chatApp.config.main_channel_name
     				},function(users){
-    					chatApp.updateUsersList(users);
+		    			if(chatApp.config.enableBots){
+							jQuery.getJSON("scripts/bots.json",function(data){
+								jQuery.each(data,function(index,value){
+									users.push(value);
+								});
+								chatApp.updateUsersList(users);
+							});
+						}else{
+    						chatApp.updateUsersList(users);
+    					}
     					//getting history but not from main chat channel
     					
 
@@ -494,7 +513,9 @@ var chatApp = {
 
 	},
 	updateUsersList:function(users){
+
 		chatApp["users"] = {};
+		
 		for(i in users){
 			chatApp.users[users[i].name] = users[i];
 		}
