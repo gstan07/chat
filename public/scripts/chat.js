@@ -1123,6 +1123,7 @@ var chatApp = {
 		//clicking the button
 		jQuery(document).on("click",".sayitbutton",function(e){
 			var input = jQuery(this).closest(".footer").find("input[type='text']");
+			var lengthcounter = input.closest(".footer").find(".lengthcounter");
 			var button = jQuery(this);
 			if(input.val()!=""){
 				var channel = input.attr("data-channel");
@@ -1141,6 +1142,7 @@ var chatApp = {
 				console.log(message);
 				chatApp.sendMessage(message);
 				button.css({"visibility":"hidden"})
+				lengthcounter.css({"visibility":"hidden"})
 				input.val("");
 				//input.focus();
 			}
