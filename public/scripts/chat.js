@@ -1,9 +1,8 @@
 
 var chatApp = {
 	config:{
-		parse:{
-			application_id:"YY9uLYQxngJOSZIEBENMVRD6bkOILotT4jzlAC0s",
-			javascript_key:"ygnAofdXqnxM1fhdmrJsMhuHtZIvjTJjVhRJiXyl"
+		ospry:{
+			public_key:"pk-prod-ugibyydpxqzrmawwx4avbpu0"
 		},
 		messaging:{
 			app_key:"plmplmplm"
@@ -29,7 +28,8 @@ var chatApp = {
 		use_animations:true,
 		private_window_animation_in:"slideInRight",//animate.css
 		private_window_animation_out:"slideOutLeft",//animate.css
-		lastmessage_length_to_show:30
+		lastmessage_length_to_show:30,
+		thumbnail_width:100
 	},
 	init:function(){
 
@@ -265,13 +265,15 @@ var chatApp = {
 	  	});
 
 	  	messaging.handleEvent("seen",function(data){
+	  		console.log("seenevent",data);
 	  		//if the message is on the screen set dom status as seen
 	  		chatApp.message_history[data.message].status = "seen";
 	  		chatApp.message_history[data.message].seen_at = data.seen_at;
-	  		console.log(chatApp.message_history[data.message]);
+	  		message = chatApp.message_history[data.message];
+	  		
 	  		chatApp.renderTemplate({
 	  			template:"#chatline",
-	  			data:chatApp.message_history[data.message],
+	  			data:message,
 	  			onRender:function(content){
 	  				jQuery(".chatline[data-chat-id='"+data.sender+data.message+"']").replaceWith(content)		
 	  			}
@@ -367,6 +369,7 @@ var chatApp = {
 		});
 	},
 	handlePrivateMessage:function(message,settings){
+		console.log("prv message received",message);
 		//add item to conversation list
 		jQuery(".conversations_container .empty").remove();
 		var partner = (message.from == chatApp.userstate.name) ? message.to : message.from;
@@ -407,16 +410,22 @@ var chatApp = {
 		//add chatline to private window if private window on screen
 		var private_window = jQuery("#privatewindow[data-channel='"+message.channel+"']");
 		if(private_window.length != 0){
+			var data = {
+				from:message.from,
+				text:message.text,
+				time:message.time,
+				avatar:message.avatar,
+				status:message.status,
+				seen_at:message.seen_at
+			};
+			if(message.image){
+				data["image"] = message.image;
+				data["image_tn_width"] = message.image_tn_width;
+				data["image_tn_height"] = message.image_tn_height;
+			}
 			chatApp.renderTemplate({
 				template:"#chatline",
-				data:{
-					from:message.from,
-					text:message.text,
-					time:message.time,
-					avatar:message.avatar,
-					status:message.status,
-					seen_at:message.seen_at
-				},
+				data:data,
 				onRender:function(content){
 					jQuery(".empty",private_window).remove();
 					
@@ -667,6 +676,7 @@ var chatApp = {
 		}
 		var user_status = user_item.attr("data-status");
 		
+
 		chatApp.renderTemplate({
 			template:"#private_conversation",
 			data:{
@@ -689,16 +699,22 @@ var chatApp = {
 					var message = chatApp.message_history[Object.keys(chatApp.message_history)[i]];
 					if(message.channel == room_name){
 						jQuery(".private_window .empty").remove();
+						var data = {
+							from:message.from,
+							text:message.text,
+							time:message.time,
+							avatar:message.avatar,
+							status:message.status,
+							seen_at:message.seen_at
+						}
+						if(message.image){
+							data["image"] = message.image;
+							data["image_tn_width"] = message.image_tn_width;
+							data["image_tn_height"] = message.image_tn_height;
+						}
 						chatApp.renderTemplate({
 							template:"#chatline",
-							data:{
-								from:message.from,
-								text:message.text,
-								time:message.time,
-								avatar:message.avatar,
-								status:message.status,
-								seen_at:message.seen_at
-							},
+							data:data,
 							onRender:function(content){
 								content = jQuery(content);
 								content.appendTo("#privatewindow[data-channel='"+room_name+"'] .wrapper");
@@ -816,8 +832,122 @@ var chatApp = {
 			
 		}
 	},
-	uiBindings:function(){
+	validateLocalFile:function(file){
+		var max_size = 10;//MB
+		var valid_types = ["image/jpg","image/jpeg","image/png"];
+		var error = [];
+		if(jQuery.inArray(file.type,valid_types) == -1){
+			error.push("Invalid file type");
+		}
+		//todo validate file size
+		if(error.length > 0){
+			return error;
+		}else{
+			return "ok";
+		}
 		
+	},
+	sendMessage:function(message){
+		if(jQuery.inArray(message.channel,messaging.joined_channels) == -1){
+			//subscribing to private conversation channel
+			//do not broadcast presence
+			//todo: do not subscribe if already subscribed
+			messaging.subscribeToChannel({
+				channel:[message.channel],
+				onSubscribe:function(response){
+					// console.log(response);
+
+					
+
+					chatApp.say(message);
+
+					//todo: only once
+					messaging.invite({
+						partner:message.to,
+						channel:message.channel,
+					},function(r){
+						// console.log("aaa")
+						// console.log(r);
+					});
+
+				}
+			});
+		}else{
+			chatApp.say(message);
+		}
+	},
+	uiBindings:function(){
+		jQuery(document).on("click touchstart","#filedialogtrigger",function(e){
+			e.stopPropagation();
+			jQuery("#picturefile").click();
+		});
+		jQuery(document).on("change","#picturefile",function(e){
+			var fileInput = jQuery(this);
+			var files = fileInput[0].files
+			var file = files[0];
+			if(file){
+				console.log(file);
+				var validFile = chatApp.validateLocalFile(file);
+				if(validFile == "ok"){
+					chatApp.filesToUpload = files;
+					console.log("valid file");
+					var reader = new FileReader();
+					reader.onload = function(e){
+						chatApp.renderTemplate({
+							template:"#imagepreview",
+							data:{
+								imageurl:reader.result
+							},
+							onRender:function(content){
+								jQuery("#imagepreviewcontainer").remove();
+								jQuery(content).insertBefore("#picturefile");
+							}
+						});
+						
+					};
+					reader.readAsDataURL(file)
+				}else{
+					alert(validFile);
+				}	
+			}
+		});
+		jQuery(document).on("click","#sendimage",function(){
+			var sendBtn = jQuery(this);
+			var partner = sendBtn.closest("[data-partner]").attr("data-partner");
+			var channel = sendBtn.closest("[data-channel]").attr("data-channel");
+			sendBtn.addClass("disabled");
+			sendBtn.text("sending");
+			
+			var message = {
+				from:chatApp.userstate.name,
+				to:partner,
+				type:"image",
+				text:"image",
+				channel:channel,
+				avatar:chatApp.userstate.avatar
+			}
+
+
+			var ospry = new Ospry(chatApp.config.ospry.public_key);
+			ospry.up({
+			    // form: document.getElementById("imageuploadform"),
+			    files:chatApp.filesToUpload,
+			    imageReady: function(err, metadata, index){
+			    	message["image"] = metadata.url;
+			    	message["image_tn_width"] = chatApp.config.thumbnail_width;
+			    	message["image_tn_height"] = chatApp.config.thumbnail_width * (metadata.height / metadata.width);
+			    	console.log(message);
+					chatApp.sendMessage(message)
+					jQuery("#imagepreviewcontainer").remove();
+			    },
+			  });
+
+			
+			
+		});
+		jQuery(document).on("click","#cancelsendimage",function(){
+			jQuery("#imagepreviewcontainer").remove();
+		});
 		jQuery(document).on("click","#signout",function(){
 			window.location.reload();
 		});
@@ -928,48 +1058,16 @@ var chatApp = {
 			//send message on enter
 			if(e.keyCode == 13 && input.val()!=""){//enter
 				
+				chatApp.sendMessage({
+					from:chatApp.userstate.name,
+					to:partner,
+					type:"text",
+					text:text,
+					channel:channel,
+					avatar:chatApp.userstate.avatar
+				});
 
-				if(jQuery.inArray(channel,messaging.joined_channels) == -1){
-					//subscribing to private conversation channel
-					//do not broadcast presence
-					//todo: do not subscribe if already subscribed
-					messaging.subscribeToChannel({
-						channel:[channel],
-						onSubscribe:function(response){
-							// console.log(response);
-
-							
-
-							chatApp.say({
-								from:chatApp.userstate.name,
-								to:partner,
-								type:"text",
-								text:text,
-								channel:channel,
-								avatar:chatApp.userstate.avatar
-							});
-
-							//todo: only once
-							messaging.invite({
-								partner:partner,
-								channel:channel,
-							},function(r){
-								console.log("aaa")
-								console.log(r);
-							});
-
-						}
-					});
-				}else{
-					chatApp.say({
-								from:chatApp.userstate.name,
-								to:partner,
-								type:"text",
-								text:text,
-								channel:channel,
-								avatar:chatApp.userstate.avatar
-							});
-				}
+				
 
 
 				
@@ -981,21 +1079,24 @@ var chatApp = {
 		})
 		//clicking the button
 		jQuery(document).on("click",".sayitbutton",function(e){
-			var input = jQuery(this).closest(".footer").find("input");
+			var input = jQuery(this).closest(".footer").find("input[type='text']");
 			var button = jQuery(this);
 			if(input.val()!=""){
 				var channel = input.attr("data-channel");
 				var room = input.closest("[data-room]").attr("data-room");
 				
-				chatApp.say({
-						from:chatApp.userstate.name,
-						to:input.attr("data-partner"),
-						room:room,
-						type:"text",
-						text:input.val(),
-						channel:channel,
-						avatar:chatApp.userstate.avatar
-				});
+
+				var message = {
+					from:chatApp.userstate.name,
+					to:input.attr("data-partner"),
+					room:room,
+					type:"text",
+					text:input.val(),
+					channel:channel,
+					avatar:chatApp.userstate.avatar
+				}
+				console.log(message);
+				chatApp.sendMessage(message);
 				button.css({"visibility":"hidden"})
 				input.val("");
 				//input.focus();
