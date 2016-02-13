@@ -133,9 +133,11 @@
 				<div class="appview" style="display:block" data-tab="mainchat">
 					<div class="wrapper">
 						<div class="scroller" id="mainchatscroller" data-channel="<%=mainchannelname%>"></div>
+						
 						<div class="footer">
+							<div class="lengthcounter">0/<%=inputmaxlength%></div>
 							<a class="sayitbutton button" href="#">Say it</a>
-							<input data-channel="<%=mainchannelname%>" type="text" data-partner="<%=mainchannelname%>" id="postonmainchat" placeholder="say something"/>
+							<input data-channel="<%=mainchannelname%>" maxlength="<%=inputmaxlength%>" type="text" data-partner="<%=mainchannelname%>" id="postonmainchat" placeholder="say something"/>
 						</div>
 					</div>
 				</div>
@@ -272,11 +274,11 @@
 				</div>
 			</div>
 			<div class="footer">
-
 				<a class="pictureicon" id="filedialogtrigger"><img src="images/photoicon.svg"></a>
 				<input type="file" id="picturefile" style="position:absolute;top:0;left:0;visibility:hidden"/>
+				<div class="lengthcounter">0/<%=inputmaxlength%></div>
 				<a class="sayitbutton button" href="#">Say it</a>
-				<input type="text" data-channel="<%=channel%>" data-partner="<%=partner%>" placeholder="say something">
+				<input type="text" maxlength="<%=inputmaxlength%>" data-channel="<%=channel%>" data-partner="<%=partner%>" placeholder="say something">
 			</div>
 		</div>
 	</script>
@@ -296,6 +298,7 @@
 		<script src="scripts/libs/livestamp.min.js"></script>
 		<script src="scripts/libs/fastclick.min.js"></script>
 		<script src="https://code.ospry.io/v1/ospry.js"></script>
+		<script src="scripts/libs/sanitize.js"></script>
 		<script>
 		//get rid of the 300ms delay with fastclick.js
 		if ('addEventListener' in document) {

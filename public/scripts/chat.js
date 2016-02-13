@@ -29,7 +29,8 @@ var chatApp = {
 		private_window_animation_in:"slideInRight",//animate.css
 		private_window_animation_out:"slideOutLeft",//animate.css
 		lastmessage_length_to_show:30,
-		thumbnail_width:100
+		thumbnail_width:100,
+		message_max_length:100
 	},
 	init:function(){
 
@@ -55,7 +56,8 @@ var chatApp = {
 					jQuery("#usernameform").validate({
 						rules:{
 							username:{
-								minlength:3
+								minlength:3,
+								maxlength:12
 							}
 						},
 						errorPlacement: function(error, element) {
@@ -157,7 +159,8 @@ var chatApp = {
 							    			mainchannelname:chatApp.config.main_channel_name,
 							    			occupancy:users.length,
 							    			username:chatApp.userstate.name,
-							    			userimage:chatApp.userstate.avatar
+							    			userimage:chatApp.userstate.avatar,
+							    			inputmaxlength:chatApp.config.message_max_length
 							    		},
 							    		onRender:function(content){
 							    			//rendering chat
@@ -635,14 +638,16 @@ var chatApp = {
 		
 	},
 	say:function(m){
-		m["time"] = new Date().getTime();
-		m["state"] = chatApp.userstate;
-		messaging.sendMessage(m);
-		m["status"] = "sent";
-		chatApp.pushInLocalHistory(m);
-		chatApp.parseHistory({animateScroll:true});
-
-		
+		if(m.text.length > chatApp.config.message_max_length){
+			alert("too long");
+		}else{
+			m["time"] = new Date().getTime();
+			m["state"] = chatApp.userstate;
+			messaging.sendMessage(m);
+			m["status"] = "sent";
+			chatApp.pushInLocalHistory(m);
+			chatApp.parseHistory({animateScroll:true});	
+		}
 	},
 	updatePrivateNottificationBubble:function(){
 
@@ -683,7 +688,8 @@ var chatApp = {
 				partner:partner,
 				channel:room_name,
 				partner_avatar_url:avatar_url,
-				status:user_status
+				status:user_status,
+				inputmaxlength:chatApp.config.message_max_length
 			},
 			onRender:function(private_window_layout){
 				
@@ -1045,19 +1051,34 @@ var chatApp = {
 			var input = jQuery(this);
 			var channel = input.attr("data-channel");
 			var button =input.closest(".footer").find(".sayitbutton");
+			var lengthcounter = input.closest(".footer").find(".lengthcounter");
 			var partner = input.attr("data-partner");
 			if(partner != chatApp.config.main_channel_name){
 				chatApp.monitorTyping(partner);
 			}
-			var text = input.val();
+			
+			lengthcounter.html(input.val().length+"/"+chatApp.config.message_max_length);
+			if(input.val().length == chatApp.config.message_max_length){
+				lengthcounter.css({
+					"color":"red",
+					"font-weight":"bold"
+				});
+			}else{
+				lengthcounter.removeAttr("style");
+			}
 			if(input.val()!=""){
 				button.css({"visibility":"visible"})
+				lengthcounter.css({"visibility":"visible"})
 			}else{
 				button.css({"visibility":"hidden"})
+				lengthcounter.css({"visibility":"hidden"})
 			}
 			//send message on enter
 			if(e.keyCode == 13 && input.val()!=""){//enter
 				
+				
+				var text = input.val();
+
 				chatApp.sendMessage({
 					from:chatApp.userstate.name,
 					to:partner,
@@ -1073,6 +1094,7 @@ var chatApp = {
 				
 				
 				button.css({"visibility":"hidden"})
+				lengthcounter.css({"visibility":"hidden"})
 				input.val("");
 			}
 
