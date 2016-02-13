@@ -9,7 +9,7 @@ var chatApp = {
 		},
 		allow_guest_user:true,
 		main_channel_name:"mainchat",
-		warn_on_reload:false,
+		warn_on_reload:true,
 		//admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
 		admin_image:"images/avatars/generic.jpeg",
 		guest_image:[
