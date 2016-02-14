@@ -12,10 +12,29 @@
 		</div>
 		<div id="chat_container"></div>
 	</body>
+	<script id="authenticated_user" type="text/html">
+		<form>
+			<div class="row"> 
+				<h1>Welcome back</h1>
+			</div>
+			<div class="row">
+				<img src="<%=avatar%>" class="avatar"/>
+				
+				<span style="font-weight:bold;display:block;text-align:center;"><%=name%></span>
+			</div>
+			<div class="row">
+				<input type="submit" value="Enter chat"/>
+			</div>
+			<div class="row">
+				<a style="color:#fff;display:block;text-align:center;font-weight:bold;" href="#" id="chooseanotherusername">Choose another username</a>
+			</div>
+		</form>
+		
+	</script>
 	<script id="startscreen" type="text/html">
 		<form id="usernameform">
 			<h1>Hi there</h1>
-			<div class="row"><p>Welcome to the chat. Start by choosing a nickname</p></div>
+			<div class="row"><p>Welcome to flirting.chat.<br/>Start by choosing a nickname</p></div>
 			<div class="row">
 				<label for="username">Nickname:<input placeholder="nickname" required type="text" id="username" name="username"/></label>
 			</div>
@@ -299,6 +318,7 @@
 		<script src="scripts/libs/fastclick.min.js"></script>
 		<script src="https://code.ospry.io/v1/ospry.js"></script>
 		<script src="scripts/libs/sanitize.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.0/js.cookie.min.js"></script>
 		<script>
 		//get rid of the 300ms delay with fastclick.js
 		if ('addEventListener' in document) {

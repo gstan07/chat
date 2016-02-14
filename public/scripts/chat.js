@@ -9,7 +9,7 @@ var chatApp = {
 		},
 		allow_guest_user:true,
 		main_channel_name:"mainchat",
-		warn_on_reload:true,
+		warn_on_reload:false,
 		//admin_image:"https://cdn2.iconfinder.com/data/icons/users-6/100/USER1-128.png",
 		admin_image:"images/avatars/generic.jpeg",
 		guest_image:[
@@ -44,7 +44,15 @@ var chatApp = {
 		
 		if(chatApp.isUserAuthenticated()){
 			//todo place user here
-			chatApp.startChat();
+			chatApp.renderTemplate({
+				template:"#authenticated_user",
+				data:chatApp.userstate,
+				onRender:function(content){
+					jQuery("#chat_container").html(content);
+					chatApp.spinner.hide();
+				}
+			});
+			// chatApp.startChat();
 		}else{
 			chatApp.spinner.show()
 			chatApp.renderTemplate({
@@ -198,6 +206,9 @@ var chatApp = {
 							    				"background-image":"none"
 							    			});
 							    			chatApp.analytics("general","startchat");
+							    			Cookies.set('userstate', JSON.stringify(chatApp.userstate),{
+							    				expires:365
+							    			});
 							    			chatApp.spinner.hide();
 							    			
 							    		}
@@ -550,7 +561,12 @@ var chatApp = {
 		
 	},
 	isUserAuthenticated:function(){
-		return false;
+		if(typeof(Cookies.get('userstate')) == "undefined"){
+			return false;	
+		}else{
+			chatApp.userstate = JSON.parse(Cookies.get('userstate'));
+			return true;
+		}
 	},
 	registerUser:function(username,email,password){
 		var user = new Parse.User();
@@ -912,6 +928,10 @@ var chatApp = {
 		ga('send', 'event', cat, action, label);
 	},
 	uiBindings:function(){
+		jQuery(document).on("click","#chooseanotherusername",function(e){
+			Cookies.remove('userstate');
+			window.location.reload();
+		})
 		jQuery(document).on("click touchstart","#filedialogtrigger",function(e){
 			e.stopPropagation();
 			jQuery("#picturefile").click();
