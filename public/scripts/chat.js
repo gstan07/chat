@@ -928,6 +928,10 @@ var chatApp = {
 		ga('send', 'event', cat, action, label);
 	},
 	uiBindings:function(){
+		jQuery(document).on("submit","#continueform",function(e){
+			e.preventDefault();
+			chatApp.startChat();
+		})
 		jQuery(document).on("click","#chooseanotherusername",function(e){
 			Cookies.remove('userstate');
 			window.location.reload();

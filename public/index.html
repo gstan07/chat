@@ -13,7 +13,7 @@
 		<div id="chat_container"></div>
 	</body>
 	<script id="authenticated_user" type="text/html">
-		<form>
+		<form id="continueform">
 			<div class="row"> 
 				<h1>Welcome back</h1>
 			</div>
@@ -23,7 +23,7 @@
 				<span style="font-weight:bold;display:block;text-align:center;"><%=name%></span>
 			</div>
 			<div class="row">
-				<input type="submit" value="Enter chat"/>
+				<input type="submit" id="continuetochat" value="Enter chat"/>
 			</div>
 			<div class="row">
 				<a style="color:#fff;display:block;text-align:center;font-weight:bold;" href="#" id="chooseanotherusername">Choose another username</a>
