@@ -930,6 +930,7 @@ var chatApp = {
 	uiBindings:function(){
 		jQuery(document).on("submit","#continueform",function(e){
 			e.preventDefault();
+			chatApp.spinner.show();
 			chatApp.startChat();
 		})
 		jQuery(document).on("click","#chooseanotherusername",function(e){
