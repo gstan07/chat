@@ -148,10 +148,12 @@ var chatApp = {
 						channel:chatApp.config.main_channel_name
 					},function(users){
 						for(i in users){
-							if(users[i].name == chatApp.userstate.name && users[i].clientId != chatApp.userstate.clientId ){
-								//duplicate user
-								alert("Someone with this username is already connected")
-								window.location.reload();
+							if(users[i].name == chatApp.userstate.name){
+								if(users[i].clientId != chatApp.userstate.clientId){
+									//duplicate user
+									alert("Someone with this username is already connected")
+									window.location.reload();
+								}
 							}
 						}
 						//user list received
@@ -930,6 +932,7 @@ var chatApp = {
 	uiBindings:function(){
 		jQuery(document).on("submit","#continueform",function(e){
 			e.preventDefault();
+			chatApp.userstate.clientId = Math.random();
 			chatApp.spinner.show();
 			chatApp.startChat();
 		})
