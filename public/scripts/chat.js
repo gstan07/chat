@@ -69,6 +69,7 @@ var chatApp = {
 						    }
 						 },
 						submitHandler:function(){
+							chatApp.analytics("general","usernamechosen",jQuery("#username").val());
 							chatApp.spinner.show()
 							var avatars = [];
 							for(i=1;i<=81;i++){
@@ -96,6 +97,7 @@ var chatApp = {
 											avatar:"Please choose an avatar"
 										},
 										submitHandler:function(){
+											chatApp.analytics("general","avatarchosen",jQuery("#choosenavatar").val());
 											chatApp.spinner.show();
 											chatApp["userstate"] = {
 												name:jQuery("#username").val(),
@@ -195,6 +197,7 @@ var chatApp = {
 							    			jQuery("body").css({
 							    				"background-image":"none"
 							    			});
+							    			chatApp.analytics("general","startchat");
 							    			chatApp.spinner.hide();
 							    			
 							    		}
@@ -678,6 +681,7 @@ var chatApp = {
 		nottification_bubble.html(unread_msgs);
 	},
 	openPrivateWindow:function(partner,channel){
+		chatApp.analytics("private","open");
 		//first ensure window is removed
 		//(it can live a little too long when animated)
 		jQuery(".private_window").remove();
@@ -875,6 +879,7 @@ var chatApp = {
 		
 	},
 	sendMessage:function(message){
+		chatApp.analytics("general","message",message.channel);
 		if(jQuery.inArray(message.channel,messaging.joined_channels) == -1){
 			//subscribing to private conversation channel
 			//do not broadcast presence
@@ -902,6 +907,9 @@ var chatApp = {
 		}else{
 			chatApp.say(message);
 		}
+	},
+	analytics:function(cat,action,label){
+		ga('send', 'event', cat, action, label);
 	},
 	uiBindings:function(){
 		jQuery(document).on("click touchstart","#filedialogtrigger",function(e){
@@ -1064,6 +1072,7 @@ var chatApp = {
 						"position":"fixed"
 				});
 			jQuery(this).addClass("selected");
+			chatApp.analytics("general","showtab",tab_to_show);
 			
 		});
 		//typing the input
