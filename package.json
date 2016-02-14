@@ -6,6 +6,7 @@
     "license": "MIT",
     "main": "server.js",
     "dependencies": {
+        "newrelic": ">=0.9",
         "express": "^4.8.7",
         "body-parser":"^1.12.0",
         "socket.io": ">=1.4.3",
