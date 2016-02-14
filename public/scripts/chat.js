@@ -222,14 +222,14 @@ var chatApp = {
 		})
 		messaging.handleEvent("disconnect",function(response){
 			chatApp.spinner.show({
-	  			style:"min",
+	  			style:"small",
 	  			msg:"disconnected"
 	  		});
 		})
 		messaging.handleEvent('reconnecting', function (response) {
 		    
 	  		chatApp.spinner.show({
-	  			style:"min",
+	  			style:"small",
 	  			msg:"attempting to reconnect..."
 	  		});
 	  	});
