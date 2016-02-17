@@ -1012,6 +1012,7 @@ var chatApp = {
 			jQuery("#imagepreviewcontainer").remove();
 		});
 		jQuery(document).on("click","#signout",function(){
+			Cookies.remove('userstate');
 			window.location.reload();
 		});
 
