@@ -230,7 +230,7 @@
 			<%=text%>
 			<%if(typeof(image) != "undefined"){
 				%>
-				<a class="imagelink" href="<%=image%>" target="_blank"><img src="<%=image%>" width="<%=image_tn_width%>" height="<%=image_tn_height%>" class="messageimage"/></a>
+				<a class="imagelink" href="<%=image%>" target="_blank"><img src="<%=image%>?maxWidth=<%=image_tn_width%>" width="<%=image_tn_width%>" height="<%=image_tn_height%>" class="messageimage"/></a>
 				<%
 			}%>
 			</span>
