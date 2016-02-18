@@ -207,7 +207,7 @@ var chatApp = {
 							    			jQuery("body").css({
 							    				"background-image":"none"
 							    			});
-							    			chatApp.analytics("general","startchat");
+							    			chatApp.analytics("general","startchat",chatApp.userstate.name);
 							    			Cookies.set('userstate', JSON.stringify(chatApp.userstate),{
 							    				expires:365
 							    			});
