@@ -9,10 +9,10 @@ var io = require('socket.io')(server,{
 	// 'pingTimeout': 360000
 });
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT;
 
 app.use('/', express.static(__dirname + '/public'));
-server.listen(port, function() { console.log('listening on port '+port)});
+server.listen(port, function() { console.log('listening on port: '+port)});
 
 var default_connection = io.use(function(socket,next){
 	var handshake = socket.handshake.query;
