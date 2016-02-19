@@ -24,6 +24,7 @@ var default_connection = io.use(function(socket,next){
 	var host = socket.handshake.headers.host;
 	var client_key = handshake.app_key;
 	var handshake_error = "";
+	console.log(host,client_key,allowed_keys[client_key].allowed_hosts.indexOf(host))
 	if(allowed_keys[client_key].allowed_hosts.indexOf(host) == -1){
 		handshake_error = "invalid app key";		
 	}
