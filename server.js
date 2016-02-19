@@ -14,18 +14,23 @@ var port = process.env.PORT;
 app.use('/', express.static(__dirname + '/public'));
 server.listen(port, function() { console.log('listening on port: '+port)});
 
+var allowed_keys = {
+	"plmplmplm":{
+		allowed_hosts:["localhost:3000","flirting.chat"]
+	}
+}
 var default_connection = io.use(function(socket,next){
 	var handshake = socket.handshake.query;
-	// console.log(socket.handshake.headers.host);
+	var host = socket.handshake.headers.host;
+	var client_key = handshake.app_key;
 	var handshake_error = "";
-	if(handshake.app_key != "plmplmplm"){//todo:replace this with app key/domain validation
+	if(allowed_keys[client_key].allowed_hosts.indexOf(host) == -1){
 		handshake_error = "invalid app key";		
 	}
-
 	if(handshake_error == ""){
 		next();
 	}else{
-		next(new Error('Authentication error'));	
+		next(new Error(handshake_error));	
 	}	
 });
 //opening a global connection
