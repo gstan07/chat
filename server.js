@@ -13,12 +13,17 @@ var port = process.env.PORT;
 
 app.use('/', express.static(__dirname + '/public'));
 server.listen(port, function() { console.log('listening on port: '+port)});
-
+var keys = {
+	"plmplmplm":{
+		allowed_domains:["localhost:3000","flirting.chat"]
+	}
+};
 var default_connection = io.use(function(socket,next){
 	var handshake = socket.handshake.query;
 	// console.log(socket.handshake.headers.host);
+	var host = socket.handshake.headers.host;
 	var handshake_error = "";
-	if(handshake.app_key != "plmplmplm"){//todo:replace this with app key/domain validation
+	if(keys[handshake.app_key].allowed_domains.indexOf(host) == -1){//todo:replace this with app key/domain validation
 		handshake_error = "invalid app key";		
 	}
 
