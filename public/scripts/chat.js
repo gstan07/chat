@@ -137,6 +137,7 @@ var chatApp = {
 			app_key:chatApp.config.messaging.app_key
 		});
 		messaging.handleEvent("connect",function(r){
+			console.log("socket connected");
 			//socket connected
 			messaging.setState(chatApp.userstate);
 			messaging.subscribeToChannel({
