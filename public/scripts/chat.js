@@ -31,7 +31,7 @@ var chatApp = {
 		lastmessage_length_to_show:30,
 		thumbnail_width:100,
 		message_max_length:100,
-		enableBots:true
+		enableBots:false
 	},
 	init:function(){
 
